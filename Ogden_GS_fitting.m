@@ -26,7 +26,7 @@ Ogden_PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 
 % Initial guess
 % GS_paras = [n_1, m_1, mu_1, n_2, m_2, mu_2] 
 % Unit of mu: MPa
-GS_paras_0 = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+GS_paras_0 = [1.0, 1.0, 10.0, 1.0, 1.0, 1.0];
 
 % tool function for generalized strain
 term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
@@ -46,8 +46,8 @@ objectiveFunction = @(x) [weights1 * (GS_UT(x, UT_x) - Ogden_UT(Ogden_paras, UT_
                           weights3 * (GS_PS(x, PS_x) - Ogden_PS(Ogden_paras, PS_x))];
 
 % 优化选项
-lb = [-Inf, -Inf, 0, 0, 0, 0];
-ub = [0, 0, Inf, Inf, Inf, Inf];
+lb = [0, 0, 0, 0, 0, 0];
+ub = [Inf, Inf, Inf, Inf, Inf, Inf];
 options = optimoptions('lsqnonlin', 'Algorithm', 'levenberg-marquardt', 'MaxIterations', 5000);
 
 % 进行优化
