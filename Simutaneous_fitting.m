@@ -10,7 +10,7 @@ Treloar_ET_stress = importdata("./Treloar-ET/stress.txt");
 
 Treloar_PS_strain = importdata("./Treloar-PS/strain.txt");
 Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
-Model_name = 'GS Model';
+Model_name = 'Ogden Model';
 
 [paras, UT, ET, PS] = curve_fitting(Model_name, ...
                                     Treloar_UT_strain, Treloar_UT_stress, ...
@@ -72,11 +72,11 @@ end
 weights = [1.0/3.0, 1.0/3.0, 1.0/3.0];
 objectiveFunction = @(x) objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS, weights);
 
-lb = [-Inf, -Inf, 0, 0, 0, 0];
-ub = [0, 0, Inf, Inf, Inf, Inf];
+% lb = [-Inf, -Inf, -Inf, -Inf, -Inf, -Inf];
+% ub = [Inf, Inf, Inf, Inf, Inf, Inf];
 
-options = optimoptions('lsqnonlin', 'Algorithm', 'interior-point','MaxIterations',3000);
-paras = lsqnonlin(objectiveFunction, paras_0, lb, ub, options);
+options = optimoptions('lsqnonlin', 'Algorithm', 'levenberg-marquardt','MaxIterations',4000);
+paras = lsqnonlin(objectiveFunction, paras_0, [], [], options);
 
 end
 

@@ -8,7 +8,7 @@ PS_x = linspace(1, 5, 100);
 
 % Ogden_paras = [mu_1, alpha_1, mu_2, alpha_2, mu_3, alpha_3]
 % Unit of mu: MPa
-Ogden_paras = [51.4, 1.8, -18, -2, 3.86, 7];
+Ogden_paras = [0.000001011380853, 8.466642508759808, 0.357908920960471, 1.907583048854296, -0.006213318442347, -2.186054640615617];
 
 % P_11 of Ogden Model
 Ogden_UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ... 
@@ -26,7 +26,7 @@ Ogden_PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 
 % Initial guess
 % GS_paras = [n_1, m_1, mu_1, n_2, m_2, mu_2] 
 % Unit of mu: MPa
-GS_paras_0 = [1.0, 1.0, 10.0, 1.0, 1.0, 1.0];
+GS_paras_0 = [0.456933700959612, 0.944062980628756, 0.357408113271674, 2.288322262453049, 3.844829199696043, 0.000024622221851];
 
 % tool function for generalized strain
 term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
