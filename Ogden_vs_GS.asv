@@ -92,7 +92,7 @@ str = {Ogden_paras_disp, GS_paras_disp};
 annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on', 'FontSize', 13, 'BackgroundColor', 'white');
 
 % Exporting the figure
-saveas(gcf, 'Ogden_vs_GS_6.png');
+saveas(gcf, 'Ogden_vs_GS.png');
 
 %% This code is to draw figures by parameters input
 % Ogden Model with 6 parameters and GS Model with 4 parameters
@@ -184,4 +184,4 @@ str = {Ogden_paras_disp, GS_paras_disp};
 annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on', 'FontSize', 10, 'BackgroundColor', 'white');
 
 % Exporting the figure
-saveas(gcf, 'Ogden_vs_GS_4.png');
+saveas(gcf, 'Ogden_vs_GS.png');

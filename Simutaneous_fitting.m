@@ -1,6 +1,5 @@
 clc; clear; close all;
 
-
 % loading data
 Treloar_UT_strain = importdata("./Treloar-UT/strain.txt");
 Treloar_UT_stress = importdata("./Treloar-UT/stress.txt");
@@ -38,7 +37,13 @@ grid off;
 
 format long
 disp('Fitted Parameters:');
-disp(paras);
+for i = 1:numel(paras)-3
+    fprintf('Parameter %d: %.6e\n', i, paras(i));
+end
+
+for i = numel(paras)-2:numel(paras)
+    fprintf('Weight %d: %.6e\n', 3-numel(paras)+i, paras(i));
+end
 
 legend('UT of experimental data', ['UT fitted by ', Model_name],...
     'ET of experimental data', ['ET fitted by ', Model_name],...
@@ -69,49 +74,41 @@ switch Model_name
         error('ERROR: WRONG INPUT MODEL_NAME!');
 end
 
-weights = [1.0/3.0, 1.0/3.0, 1.0/3.0];
-objectiveFunction = @(x) objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS, weights);
+objectiveFunction = @(x) objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
 
-% lb = [-Inf, -Inf, -Inf, -Inf, -Inf, -Inf];
-% ub = [Inf, Inf, Inf, Inf, Inf, Inf];
+nonlcon = @(x) nonlcon_func(x);
 
-options = optimoptions('lsqnonlin', 'Algorithm', 'levenberg-marquardt','MaxIterations',4000);
-paras = lsqnonlin(objectiveFunction, paras_0, [], [], options);
+lb = [-Inf, -Inf, -Inf, -Inf, 0, 0, 0];
+ub = [Inf, Inf, Inf, Inf, 1, 1, 1]; % assuming weights are between 0 and 1
 
+options = optimoptions('fmincon', 'Algorithm', 'interior-point', 'MaxIterations', 4000);
+paras = fmincon(objectiveFunction, [paras_0, 1/3, 1/3, 1/3], [], [], [], [], lb, ub, nonlcon, options);
 end
 
 % Objective function
-function res = objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS, weights)
-    res = [weights(1) * (UT(x, UT_strain) - UT_stress);
-           weights(2) * (ET(x, ET_strain) - ET_stress);
-           weights(3) * (PS(x, PS_strain) - PS_stress)];
+function res = objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)
+    paras = x(1:end-3);
+    weights = x(end-2:end);
+    
+    res = weights(1) * sum((UT(paras, UT_strain) - UT_stress).^2) ./ length(UT_strain)+ ...
+          weights(2) * sum((ET(paras, ET_strain) - ET_stress).^2) ./ length(ET_strain)+ ...
+          weights(3) * sum((PS(paras, PS_strain) - PS_stress).^2) ./ length(PS_strain);
 end
 
-% Initilize Ogden Model
-function [paras_0, UT, ET, PS] = Ogden_Model_Init()
-
-paras_0 = [1.0, 1.0, 1.0, 1.0, -1.0, -1.0];
-
-UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ...
-    + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-0.5 * x(4) - 1.0) )...
-    + x(5) * ( xdata .^ (x(6) - 1.0) - xdata .^ (-0.5 * x(6) - 1.0) );
-
-ET = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-2.0 * x(2) - 1.0) ) ...
-    + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-2.0 * x(4) - 1.0) )...
-    + x(5) * ( xdata .^ (x(6) - 1.0) - xdata .^ (-2.0 * x(6) - 1.0) );
-
-PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 1.0) ) ...
-    + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-1.0 * x(4) - 1.0) )...
-    + x(5) * ( xdata .^ (x(6) - 1.0) - xdata .^ (-1.0 * x(6) - 1.0) );
+% Nonlinear constraint function
+function [c, ceq] = nonlcon_func(x)
+    weights = x(end-2:end);
+    c = [];
+    ceq = sum(weights) - 1; % Ensure the sum of weights is 1
 end
 
-% Initilize GS Model
+% Initialize GS Model
 function [paras_0, UT, ET, PS] = GS_Model_Init()
-paras_0 = [1.5, 2, 2.0, 1.0, 1.0, 0.5];
+paras_0 = [0.5, 0.5, 2.0, 4];
 
 % tool function for generalized strain
-term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
-term2 = @(x, xdata) 2*x(6)*(xdata.^x(5) - xdata.^(-x(4))) .* ((x(5).*(xdata.^(x(5)-1)) + x(4).*(xdata.^(-x(4)-1)) )  / (x(5)+x(4)).^2);
+term1 = @(x, xdata) 2.*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
+term2 = @(x, xdata) 2.*x(4).*log(xdata)./xdata;
 
 % P_11 of generalized strain
 UT = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-1.5)) .* ( term1(x, xdata.^(-0.5)) + term2(x, xdata.^(-0.5)) );
@@ -120,7 +117,53 @@ PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(
 
 end
 
-% Initilize AB Model
+% % Initialize GS Model
+% function [paras_0, UT, ET, PS] = GS_Model_Init()
+% paras_0 = [1.0, 2, 2.0, 1.0, 1.0, 0.5];
+% 
+% % tool function for generalized strain
+% term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
+% term2 = @(x, xdata) 2*x(6)*(xdata.^x(5) - xdata.^(-x(4))) .* ((x(5).*(xdata.^(x(5)-1)) + x(4).*(xdata.^(-x(4)-1)) )  / (x(5)+x(4)).^2);
+% 
+% % P_11 of generalized strain
+% UT = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-1.5)) .* ( term1(x, xdata.^(-0.5)) + term2(x, xdata.^(-0.5)) );
+% ET = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-3.0)) .* ( term1(x, xdata.^(-2.0)) + term2(x, xdata.^(-2.0)) );
+% PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(x, xdata.^(-1.0)) + term2(x, xdata.^(-1.0)) );
+% 
+% end
+
+% Initialize Ogden Model
+function [paras_0, UT, ET, PS] = Ogden_Model_Init()
+paras_0 = [11.0, 1.0, 1.0, 1.0];
+
+UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ...
+    + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-0.5 * x(4) - 1.0) );
+
+ET = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-2.0 * x(2) - 1.0) ) ...
+    + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-2.0 * x(4) - 1.0) );
+
+PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 1.0) ) ...
+    + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-1.0 * x(4) - 1.0) );
+end
+
+% Initialize Ogden Model
+% function [paras_0, UT, ET, PS] = Ogden_Model_Init()
+% paras_0 = [1.0, 1.0, 1.0, 2.0, -1.0, -1.0];
+% 
+% UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ...
+%     + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-0.5 * x(4) - 1.0) )...
+%     + x(5) * ( xdata .^ (x(6) - 1.0) - xdata .^ (-0.5 * x(6) - 1.0) );
+% 
+% ET = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-2.0 * x(2) - 1.0) ) ...
+%     + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-2.0 * x(4) - 1.0) )...
+%     + x(5) * ( xdata .^ (x(6) - 1.0) - xdata .^ (-2.0 * x(6) - 1.0) );
+% 
+% PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 1.0) ) ...
+%     + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-1.0 * x(4) - 1.0) )...
+%     + x(5) * ( xdata .^ (x(6) - 1.0) - xdata .^ (-1.0 * x(6) - 1.0) );
+% end
+
+% Initialize AB Model
 function [paras_0, UT, ET, PS] = AB_Model_Init()
 paras_0 = [0.3, 20.0];
 
@@ -143,7 +186,7 @@ PS = @(x, xdata) x(1) .* ( xdata - xdata.^(-3.0) ) .* ( ...
     + ( 2595.0 ./ ( 336875.0 .* x(2).^4 ) ) .* ( xdata.^2 + xdata.^(-2) + 1 ).^4 );
 end
 
-% Initilize MR Model
+% Initialize MR Model
 function [paras_0, UT, ET, PS] = MR_Model_Init()
 paras_0 = [0.2, 0.01];
 
@@ -152,11 +195,10 @@ ET = @(x, xdata) 2.0 .* ( x(1) + x(2) .* xdata.^2 ) .* (xdata - xdata.^(-5));
 PS = @(x, xdata) 2.0 .* ( x(1) + x(2) ) .* ( xdata - xdata.^(-3));
 end
 
-% Initilize NeoHookean Model
+% Initialize NeoHookean Model
 function [paras_0, UT, ET, PS] = NeoHookean_Model_Init()
 paras_0 = 1.0;
 UT = @(x, xdata) x .* (xdata - xdata.^(-2));
 ET = @(x, xdata) x .* (xdata - xdata.^(-5));
 PS = @(x, xdata) x .* (xdata - xdata.^(-3));
 end
-
