@@ -17,7 +17,7 @@ Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
 
 % Ogden_paras = [mu_1, alpha_1, mu_2, alpha_2, mu_3, alpha_3]
 % Unit of mu: MPa
-Ogden_paras = [0.000001011380853, 8.466642508759808, 0.357908920960471, 1.907583048854296, -0.006213318442347, -2.186054640615617];
+Ogden_paras = [0.405964970933792, 1.81905863300734, -0.00187993204611, -2.595253951490412, 0.000001822612535, 8.189521472029236];
 
 % P_11 of Ogden Model
 Ogden_UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ... 
@@ -34,7 +34,7 @@ Ogden_PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 
 
 % GS_paras = [n_1, m_1, mu_1, n_2, m_2, mu_2] 
 % Unit of mu: MPa
-GS_paras = [0.456933700959612, 0.944062980628756, 0.357408113271674, 2.288322262453049, 3.844829199696043, 0.000024622221851];
+GS_paras = [0.465040714994318, 0.979025160756377, 0.349168135852744, -4.165072038687732, -2.493582639751676, 0.000007016260642];
 
 % tool function for generalized strain
 term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
@@ -72,7 +72,7 @@ hold off;
 legend('UT Experimental', 'UT Ogden', 'UT GS',...
        'ET Experimental', 'ET Ogden', 'ET GS',...
        'PS Experimental', 'PS Ogden', 'PS GS',...
-       'Location', 'northwest', 'FontSize', 16);
+       'Location', 'northwest', 'FontSize', 14);
 
 title('Data and Fitted Curves', 'FontSize', 18);
 xlabel('Stretch', 'FontSize', 16);
@@ -92,7 +92,7 @@ str = {Ogden_paras_disp, GS_paras_disp};
 annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on', 'FontSize', 13, 'BackgroundColor', 'white');
 
 % Exporting the figure
-saveas(gcf, 'Ogden_vs_GS.png');
+saveas(gcf, 'Ogden_vs_GS_6.png');
 
 %% This code is to draw figures by parameters input
 % Ogden Model with 6 parameters and GS Model with 4 parameters
@@ -113,7 +113,7 @@ Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
 
 % Ogden_paras = [mu_1, alpha_1, mu_2, alpha_2]
 % Unit of mu: MPa
-Ogden_paras = 1.0e3 .* [0.000006488480480, 0.004299595408666, 1.075480794858911, 0.000000829304347];
+Ogden_paras = [390.8211183597691, 0.0022284257709, 0.0078059420489   04.1961222565320];
 
 % P_11 of Ogden Model
 Ogden_UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ... 
@@ -164,7 +164,7 @@ hold off;
 legend('UT Experimental', 'UT Ogden', 'UT GS',...
        'ET Experimental', 'ET Ogden', 'ET GS',...
        'PS Experimental', 'PS Ogden', 'PS GS',...
-       'Location', 'northwest', 'FontSize', 10);
+       'Location', 'northwest', 'FontSize', 14);
 
 title('Data and Fitted Curves', 'FontSize', 18);
 xlabel('Stretch', 'FontSize', 16);
@@ -184,4 +184,4 @@ str = {Ogden_paras_disp, GS_paras_disp};
 annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on', 'FontSize', 10, 'BackgroundColor', 'white');
 
 % Exporting the figure
-saveas(gcf, 'Ogden_vs_GS.png');
+saveas(gcf, 'Ogden_vs_GS_4.png');

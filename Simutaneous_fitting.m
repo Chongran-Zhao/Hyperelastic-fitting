@@ -9,7 +9,7 @@ Treloar_ET_stress = importdata("./Treloar-ET/stress.txt");
 
 Treloar_PS_strain = importdata("./Treloar-PS/strain.txt");
 Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
-Model_name = 'Ogden Model';
+Model_name = 'GS Model';
 
 [paras, UT, ET, PS] = curve_fitting(Model_name, ...
                                     Treloar_UT_strain, Treloar_UT_stress, ...
@@ -78,8 +78,10 @@ objectiveFunction = @(x) objective(x, UT_strain, UT_stress, ET_strain, ET_stress
 
 nonlcon = @(x) nonlcon_func(x);
 
-lb = [-Inf, -Inf, -Inf, -Inf, 0, 0, 0];
-ub = [Inf, Inf, Inf, Inf, 1, 1, 1]; % assuming weights are between 0 and 1
+lb = -Inf * ones(1, length(paras_0));
+lb = [lb, 0, 0, 0];
+ub = Inf * ones(1, length(paras_0));
+ub = [ub, 1, 1, 1];
 
 options = optimoptions('fmincon', 'Algorithm', 'interior-point', 'MaxIterations', 4000);
 paras = fmincon(objectiveFunction, [paras_0, 1/3, 1/3, 1/3], [], [], [], [], lb, ub, nonlcon, options);
@@ -114,12 +116,11 @@ term2 = @(x, xdata) 2.*x(4).*log(xdata)./xdata;
 UT = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-1.5)) .* ( term1(x, xdata.^(-0.5)) + term2(x, xdata.^(-0.5)) );
 ET = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-3.0)) .* ( term1(x, xdata.^(-2.0)) + term2(x, xdata.^(-2.0)) );
 PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(x, xdata.^(-1.0)) + term2(x, xdata.^(-1.0)) );
-
 end
 
-% % Initialize GS Model
+% Initialize GS Model
 % function [paras_0, UT, ET, PS] = GS_Model_Init()
-% paras_0 = [1.0, 2, 2.0, 1.0, 1.0, 0.5];
+% paras_0 = [1.0, 2, 2.0, 1.0, 1.0, 1.0];
 % 
 % % tool function for generalized strain
 % term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
