@@ -37,27 +37,22 @@ GS_UT = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-1.5)) .* ( ter
 GS_ET = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-3.0)) .* ( term1(x, xdata.^(-2.0)) + term2(x, xdata.^(-2.0)) );
 GS_PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(x, xdata.^(-1.0)) + term2(x, xdata.^(-1.0)) );
 
-weights1 = 1.0/3.0;
-weights2 = 1.0/3.0;
-weights3 = 1.0/3.0;
+objectiveFunction = @(x) sum((GS_UT(x, UT_x) - Ogden_UT(Ogden_paras, UT_x)).^2) / length(UT_x) + ...
+                          sum((GS_ET(x, ET_x) - Ogden_ET(Ogden_paras, ET_x)).^2) / length(ET_x) + ...
+                          sum((GS_PS(x, PS_x) - Ogden_PS(Ogden_paras, PS_x)).^2) / length(PS_x);
 
-objectiveFunction = @(x) [weights1 * (GS_UT(x, UT_x) - Ogden_UT(Ogden_paras, UT_x)); 
-                          weights2 * (GS_ET(x, ET_x) - Ogden_ET(Ogden_paras, ET_x));
-                          weights3 * (GS_PS(x, PS_x) - Ogden_PS(Ogden_paras, PS_x))];
 
 % 优化选项
-lb = [0, 0, 0, 0, 0, 0];
+nvars = 6; % 参数数量
+lb = [-Inf, -Inf, 0, -Inf, -Inf, 0];
 ub = [Inf, Inf, Inf, Inf, Inf, Inf];
-options = optimoptions('lsqnonlin', 'Algorithm', 'levenberg-marquardt', 'MaxIterations', 5000);
+options = optimoptions('ga', 'MaxGenerations', 1000, 'Display', 'iter', 'UseParallel', true);
 
 % 进行优化
-[GS_paras, resnorm, residual, exitflag, output] = lsqnonlin(objectiveFunction, GS_paras_0, lb, ub, options);
+[GS_paras, fval, exitFlag, output] = ga(objectiveFunction, nvars, [], [], [], [], lb, ub, [], options);
 
 disp(['n_1 = ' num2str(GS_paras(1)) ' m_1 = ' num2str(GS_paras(2)) ' mu_1 = ' num2str(GS_paras(3))]);
 disp(['n_2 = ' num2str(GS_paras(4)) ' m_2 = ' num2str(GS_paras(5)) ' mu_2 = ' num2str(GS_paras(6))]);
-disp(['residual norm = ' num2str(resnorm)] );
-disp('residual at each point:');
-disp(residual);
 
 % figures
 figure;
