@@ -9,7 +9,7 @@ Treloar_ET_stress = importdata("./Treloar-ET/stress.txt");
 
 Treloar_PS_strain = importdata("./Treloar-PS/strain.txt");
 Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
-Model_name = 'GS4 Model';
+Model_name = 'Ogden4 Model';
 
 [paras, UT, ET, PS] = curve_fitting(Model_name, ...
                                     Treloar_UT_strain, Treloar_UT_stress, ...
@@ -62,6 +62,8 @@ function [paras, UT, ET, PS] = curve_fitting(Model_name, ...
 switch Model_name
     case 'Ogden Model'
         [paras_0, lb, ub, UT, ET, PS] = Ogden_Model_Init();
+    case 'Ogden4 Model'
+        [paras_0, lb, ub, UT, ET, PS] = Ogden4_Model_Init();
     case 'GS Model'
         [paras_0, lb, ub, UT, ET, PS] = GS_Model_Init();
     case 'GS4 Model'
@@ -168,6 +170,22 @@ ET = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-2.0 * x(2) - 1.0) )
 PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 1.0) ) ...
     + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-1.0 * x(4) - 1.0) )...
     + x(5) * ( xdata .^ (x(6) - 1.0) - xdata .^ (-1.0 * x(6) - 1.0) );
+end
+
+% Initialize Ogden Model (4 parameters)
+function [paras_0, lb, ub, UT, ET, PS] = Ogden4_Model_Init()
+lb = [-Inf, -Inf, -Inf, -Inf];
+ub = [Inf, Inf, Inf, Inf];
+paras_0 = [1.0, 1.0, -2.0, -3.0];
+
+UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ...
+    + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-0.5 * x(4) - 1.0) );
+
+ET = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-2.0 * x(2) - 1.0) ) ...
+    + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-2.0 * x(4) - 1.0) );
+
+PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 1.0) ) ...
+    + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-1.0 * x(4) - 1.0) );
 end
 
 % Initialize AB Model
