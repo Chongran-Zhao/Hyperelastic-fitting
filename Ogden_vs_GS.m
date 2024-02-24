@@ -17,7 +17,7 @@ Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
 
 % Ogden_paras = [mu_1, alpha_1, mu_2, alpha_2, mu_3, alpha_3]
 % Unit of mu: MPa
-Ogden_paras = [0.405964970933792, 1.81905863300734, -0.00187993204611, -2.595253951490412, 0.000001822612535, 8.189521472029236];
+Ogden_paras = [4.05965e-1, 1.819059, -1.879932e-3, -2.595254, 1.822613e-6, 8.189521];
 
 % P_11 of Ogden Model
 Ogden_UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ... 
@@ -34,7 +34,7 @@ Ogden_PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 
 
 % GS_paras = [n_1, m_1, mu_1, n_2, m_2, mu_2] 
 % Unit of mu: MPa
-GS_paras = [0.465040714994318, 0.979025160756377, 0.349168135852744, -4.165072038687732, -2.493582639751676, 0.000007016260642];
+GS_paras = [-9.612114e-1, -4.577532e-1, 3.535054e-1, 2.384084, 3.98994, 1.37801e-5];
 
 % tool function for generalized strain
 term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
@@ -113,7 +113,7 @@ Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
 
 % Ogden_paras = [mu_1, alpha_1, mu_2, alpha_2]
 % Unit of mu: MPa
-Ogden_paras = [390.8211183597691, 0.0022284257709, 0.0078059420489, 4.1961222565320];
+Ogden_paras = [-1.512367, -4.865593e-1, 6.220023e-3, 4.336023];
 
 % P_11 of Ogden Model
 Ogden_UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ... 
@@ -127,7 +127,7 @@ Ogden_PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 
 
 % GS_paras = [n_1, m_1, mu_1, mu2] 
 % Unit of mu: MPa
-GS_paras = [1.108303207795022, 2.132228187397911, 0.020105378489500, 0.328183193193576];
+GS_paras = [1.225253, 2.264374, 1.122219e-2, 4.182241e-1];
 
 % tool function for generalized strain
 term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
