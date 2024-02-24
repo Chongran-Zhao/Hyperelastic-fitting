@@ -57,23 +57,23 @@ function [paras, UT, ET, PS] = curve_fitting(Model_name, ...
                                              PS_strain, PS_stress)
 switch Model_name
     case 'Ogden Model'
-        [lb, ub, nvars, UT, ET, PS] = Ogden_Model_Init();
+        [paras_0, lb, ub, UT, ET, PS] = Ogden_Model_Init();
     case 'GS Model'
-        [lb, ub, nvars, UT, ET, PS] = GS_Model_Init();
+        [paras_0, lb, ub, UT, ET, PS] = GS_Model_Init();
     case 'GS4 Model'
-        [lb, ub, nvars, UT, ET, PS] = GS4_Model_Init();
+        [paras_0, lb, ub, UT, ET, PS] = GS4_Model_Init();
     case 'AB Model'
-        [lb, ub, nvars, UT, ET, PS] = AB_Model_Init();
+        [paras_0, lb, ub, UT, ET, PS] = AB_Model_Init();
     case 'MR Model'
-        [lb, ub, nvars, UT, ET, PS] = MR_Model_Init();
+        [paras_0, lb, ub, UT, ET, PS] = MR_Model_Init();
     otherwise
         error('ERROR: WRONG INPUT MODEL_NAME!');
 end
 
 objectiveFunction = @(x) objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
 
-options = optimoptions('ga', 'MaxGenerations', 10000, 'Display', 'iter', 'UseParallel', true);
-[paras, ~] = ga(objectiveFunction, nvars, [], [], [], [], lb, ub, [], options);
+options = optimoptions('lsqnonlin', 'Algorithm', 'interior-point', 'MaxIterations', 5000);
+[paras, ~] = lsqnonlin( objectiveFunction, paras_0, lb, ub, options );
 
 resnorm = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
 disp(['Residual norm = ' num2str(resnorm)]);
@@ -86,7 +86,6 @@ function res = objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strai
           sum((ET(x, ET_strain) - ET_stress).^2) ./ length(ET_strain)+ ...
           sum((PS(x, PS_strain) - PS_stress).^2) ./ length(PS_strain);
 end
-
 function f = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)    
     res_UT = UT(paras, UT_strain) - UT_stress;
     res_ET = ET(paras, ET_strain) - ET_stress;
@@ -98,10 +97,12 @@ function f = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, P
 end
 
 % Initialize GS Model
-function [lb, ub, nvars, UT, ET, PS] = GS_Model_Init()
+function [paras_0, lb, ub, UT, ET, PS] = GS_Model_Init()
 lb = [-Inf, -Inf, 0, -Inf, -Inf, 0];
 ub = [Inf, Inf, Inf, Inf, Inf, Inf];
-nvars = 6;
+
+paras_0 = [1.0, 1.0, 1.0, 1.0, 1.0, 2.0];
+
 % tool function for generalized strain
 term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
 term2 = @(x, xdata) 2*x(6)*(xdata.^x(5) - xdata.^(-x(4))) .* ((x(5).*(xdata.^(x(5)-1)) + x(4).*(xdata.^(-x(4)-1)) )  / (x(5)+x(4)).^2);
@@ -114,10 +115,10 @@ PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(
 end
 
 % Initialize GS4 Model (4 parameters)
-function [lb, ub, nvars, UT, ET, PS] = GS4_Model_Init()
-lb = [-3, -3, 0, 0];
-ub = [3, 3, 1, 1];
-nvars = 4;
+function [paras_0, lb, ub, UT, ET, PS] = GS4_Model_Init()
+lb = [-Inf, -Inf, 0, 0];
+ub = [Inf, Inf, Inf, Inf];
+paras_0 = [1.0, 1.0, 1.0, 1.0];
 
 % tool function for generalized strain
 term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
@@ -130,11 +131,10 @@ PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(
 end
 
 % Initialize Ogden Model
-function [lb, ub, nvars, UT, ET, PS] = Ogden_Model_Init()
-
-lb = [-2, -2, -2, -2, 0, 0];
-ub = [0, 0, 0, 0, 10, 10];
-nvars = 6;
+function [paras_0, lb, ub, UT, ET, PS] = Ogden_Model_Init()
+lb = [-Inf, -Inf, -Inf, -Inf, -Inf, -Inf];
+ub = [Inf, Inf, Inf, Inf, Inf, Inf];
+paras_0 = [1.0, 1.0, 4.0, 2.0, -1.0, -1.0];
 
 UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ...
     + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-0.5 * x(4) - 1.0) )...
@@ -150,10 +150,11 @@ PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 1.0) )
 end
 
 % Initialize AB Model
-function [lb, ub, nvars, UT, ET, PS] = AB_Model_Init()
+function [paras_0, lb, ub, UT, ET, PS] = AB_Model_Init()
 lb = [0, 0];
-ub = [1, 50];
-nvars = 2;
+ub = [Inf, Inf];
+paras_0 = [3, 100.0];
+
 UT = @(x, xdata) x(1) .* ( xdata - xdata.^(-2.0) ) .* ( ...
     1 + ( 1.0 ./ ( 5.0 .* x(2) ) ) .* ( xdata.^2 + 2.0.*(xdata.^(-1)) )...
     + ( 33.0 ./ ( 525.0 .* x(2).^2 ) )  .* ( xdata.^2 + 2.0.*(xdata.^(-1)) ).^2 ...
@@ -174,10 +175,11 @@ PS = @(x, xdata) x(1) .* ( xdata - xdata.^(-3.0) ) .* ( ...
 end
 
 % Initialize MR Model
-function [lb, ub, nvars, UT, ET, PS] = MR_Model_Init()
+function [paras_0, lb, ub, UT, ET, PS] = MR_Model_Init()
 lb = [0, 0];
-ub = [1, 1];
-nvars = 2;
+ub = [Inf, Inf];
+paras_0 = [1, 1];
+
 UT = @(x, xdata) 2.0 .* ( x(1) + x(2)./xdata ) .* ( xdata - xdata.^(-2));
 ET = @(x, xdata) 2.0 .* ( x(1) + x(2) .* xdata.^2 ) .* (xdata - xdata.^(-5));
 PS = @(x, xdata) 2.0 .* ( x(1) + x(2) ) .* ( xdata - xdata.^(-3));

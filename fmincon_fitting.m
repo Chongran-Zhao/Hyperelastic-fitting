@@ -9,7 +9,7 @@ Treloar_ET_stress = importdata("./Treloar-ET/stress.txt");
 
 Treloar_PS_strain = importdata("./Treloar-PS/strain.txt");
 Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
-Model_name = 'GS Model';
+Model_name = 'GS4 Model';
 
 [paras, UT, ET, PS] = curve_fitting(Model_name, ...
                                     Treloar_UT_strain, Treloar_UT_stress, ...
@@ -61,15 +61,15 @@ function [paras, UT, ET, PS] = curve_fitting(Model_name, ...
                                              PS_strain, PS_stress)
 switch Model_name
     case 'Ogden Model'
-        [paras_0, UT, ET, PS] = Ogden_Model_Init();
+        [paras_0, lb, ub, UT, ET, PS] = Ogden_Model_Init();
     case 'GS Model'
-        [paras_0, UT, ET, PS] = GS_Model_Init();
+        [paras_0, lb, ub, UT, ET, PS] = GS_Model_Init();
+    case 'GS4 Model'
+        [paras_0, lb, ub, UT, ET, PS] = GS4_Model_Init();
     case 'AB Model'
-        [paras_0, UT, ET, PS] = AB_Model_Init();
+        [paras_0, lb, ub, UT, ET, PS] = AB_Model_Init();
     case 'MR Model'
-        [paras_0, UT, ET, PS] = MR_Model_Init();
-    case 'NeoHookean Model'
-        [paras_0, UT, ET, PS] = NeoHookean_Model_Init();
+        [paras_0, lb, ub, UT, ET, PS] = MR_Model_Init();
     otherwise
         error('ERROR: WRONG INPUT MODEL_NAME!');
 end
@@ -78,8 +78,6 @@ objectiveFunction = @(x) objective(x, UT_strain, UT_stress, ET_strain, ET_stress
 
 nonlcon = @(x) nonlcon_func(x);
 
-lb = [-Inf, -Inf, 0, -Inf, -Inf, 0];
-ub = [Inf, Inf, Inf, Inf, Inf, Inf];
 lb = [lb, 0, 0, 0];
 ub = [ub, 1, 1, 1];
 
@@ -122,7 +120,9 @@ function [c, ceq] = nonlcon_func(x)
 end
 
 % Initialize GS Model
-function [paras_0, UT, ET, PS] = GS_Model_Init()
+function [paras_0, lb, ub, UT, ET, PS] = GS_Model_Init()
+lb = [-Inf, -Inf, 0, -Inf, -Inf, 0];
+ub = [Inf, Inf, Inf, Inf, Inf, Inf];
 paras_0 = [1.0, 1.0, 1.0, 2.0, 2.0, 2.0];
 
 % tool function for generalized strain
@@ -133,11 +133,28 @@ term2 = @(x, xdata) 2*x(6)*(xdata.^x(5) - xdata.^(-x(4))) .* ((x(5).*(xdata.^(x(
 UT = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-1.5)) .* ( term1(x, xdata.^(-0.5)) + term2(x, xdata.^(-0.5)) );
 ET = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-3.0)) .* ( term1(x, xdata.^(-2.0)) + term2(x, xdata.^(-2.0)) );
 PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(x, xdata.^(-1.0)) + term2(x, xdata.^(-1.0)) );
+end
 
+% Initialize GS4 Model (4 parameters)
+function [paras_0, lb, ub, UT, ET, PS] = GS4_Model_Init()
+lb = [-Inf, -Inf, 0, 0];
+ub = [Inf, Inf, Inf, Inf];
+paras_0 = [1.0, 2.0, 4, 1.0];
+
+% tool function for generalized strain
+term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
+term2 = @(x, xdata) 2*x(4).*log(xdata)./xdata;
+
+% P_11 of generalized strain
+UT = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-1.5)) .* ( term1(x, xdata.^(-0.5)) + term2(x, xdata.^(-0.5)) );
+ET = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-3.0)) .* ( term1(x, xdata.^(-2.0)) + term2(x, xdata.^(-2.0)) );
+PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(x, xdata.^(-1.0)) + term2(x, xdata.^(-1.0)) );
 end
 
 % Initialize Ogden Model
-function [paras_0, UT, ET, PS] = Ogden_Model_Init()
+function [paras_0, lb, ub, UT, ET, PS] = Ogden_Model_Init()
+lb = [-Inf, -Inf, -Inf, -Inf, -Inf, -Inf];
+ub = [Inf, Inf, Inf, Inf, Inf, Inf];
 paras_0 = [1.0, 1.0, 1.0, 2.0, -1.0, -1.0];
 
 UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ...
@@ -154,8 +171,10 @@ PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 1.0) )
 end
 
 % Initialize AB Model
-function [paras_0, UT, ET, PS] = AB_Model_Init()
-paras_0 = [0.3, 20.0];
+function [paras_0, lb, ub, UT, ET, PS] = AB_Model_Init()
+lb = [0, 0];
+ub = [Inf, Inf];
+paras_0 = [1.0, 24.5];
 
 UT = @(x, xdata) x(1) .* ( xdata - xdata.^(-2.0) ) .* ( ...
     1 + ( 1.0 ./ ( 5.0 .* x(2) ) ) .* ( xdata.^2 + 2.0.*(xdata.^(-1)) )...
@@ -177,18 +196,12 @@ PS = @(x, xdata) x(1) .* ( xdata - xdata.^(-3.0) ) .* ( ...
 end
 
 % Initialize MR Model
-function [paras_0, UT, ET, PS] = MR_Model_Init()
-paras_0 = [0.2, 0.01];
+function [paras_0, lb, ub, UT, ET, PS] = MR_Model_Init()
+lb = [0, 0];
+ub = [Inf, Inf];
+paras_0 = [1, 1];
 
 UT = @(x, xdata) 2.0 .* ( x(1) + x(2)./xdata ) .* ( xdata - xdata.^(-2));
 ET = @(x, xdata) 2.0 .* ( x(1) + x(2) .* xdata.^2 ) .* (xdata - xdata.^(-5));
 PS = @(x, xdata) 2.0 .* ( x(1) + x(2) ) .* ( xdata - xdata.^(-3));
-end
-
-% Initialize NeoHookean Model
-function [paras_0, UT, ET, PS] = NeoHookean_Model_Init()
-paras_0 = 1.0;
-UT = @(x, xdata) x .* (xdata - xdata.^(-2));
-ET = @(x, xdata) x .* (xdata - xdata.^(-5));
-PS = @(x, xdata) x .* (xdata - xdata.^(-3));
 end
