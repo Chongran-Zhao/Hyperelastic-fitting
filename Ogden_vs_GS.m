@@ -105,6 +105,15 @@ dim = [0.3, 0.75, 0.3, 0.15];
 str = {Ogden_paras_disp, GS_paras_disp};
 annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on', 'FontSize', 13, 'BackgroundColor', 'white');
 
+% Concatenating residual norm strings for display
+GS_res_disp = ['GS Residual Norm: ', num2str(GS_res)];
+Ogden_res_disp = ['Ogden Residual Norm: ', num2str(Ogden_res)];
+
+% Annotation box for displaying residual norms
+dim_res = [0.3, 0.7, 0.3, 0.15];
+str_res = {Ogden_res_disp, GS_res_disp};
+annotation('textbox', dim_res, 'String', str_res, 'FitBoxToText', 'on', 'FontSize', 13, 'BackgroundColor', 'white');
+
 % Exporting the figure
 saveas(gcf, 'Ogden_vs_GS_6.png');
 
@@ -209,6 +218,15 @@ GS_paras_disp = ['GS Parameters: ', strjoin(GS_paras_str, ', ')];
 dim = [0.3, 0.75, 0.3, 0.15];
 str = {Ogden_paras_disp, GS_paras_disp};
 annotation('textbox', dim, 'String', str, 'FitBoxToText', 'on', 'FontSize', 13, 'BackgroundColor', 'white');
+
+% Concatenating residual norm strings for display
+GS_res_disp = ['GS Residual Norm: ', num2str(GS_res)];
+Ogden_res_disp = ['Ogden Residual Norm: ', num2str(Ogden_res)];
+
+% Annotation box for displaying residual norms
+dim_res = [0.3, 0.7, 0.3, 0.15];
+str_res = {Ogden_res_disp, GS_res_disp};
+annotation('textbox', dim_res, 'String', str_res, 'FitBoxToText', 'on', 'FontSize', 13, 'BackgroundColor', 'white');
 
 % Exporting the figure
 saveas(gcf, 'Ogden_vs_GS_4.png');
