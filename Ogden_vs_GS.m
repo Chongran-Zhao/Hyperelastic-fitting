@@ -45,6 +45,20 @@ GS_UT = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-1.5)) .* ( ter
 GS_ET = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-3.0)) .* ( term1(x, xdata.^(-2.0)) + term2(x, xdata.^(-2.0)) );
 GS_PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(x, xdata.^(-1.0)) + term2(x, xdata.^(-1.0)) );
 
+% Residual norm
+GS_res = sum((GS_UT(GS_paras, Treloar_UT_strain)-Treloar_UT_stress) .* (GS_UT(GS_paras, Treloar_UT_strain)-Treloar_UT_stress))...
+       + sum((GS_ET(GS_paras, Treloar_ET_strain)-Treloar_ET_stress) .* (GS_ET(GS_paras, Treloar_ET_strain)-Treloar_ET_stress))...
+       + sum((GS_PS(GS_paras, Treloar_PS_strain)-Treloar_PS_stress) .* (GS_PS(GS_paras, Treloar_PS_strain)-Treloar_PS_stress));
+
+disp(['GS residual norm = ' num2str(GS_res)]);
+
+Ogden_res = sum((Ogden_UT(Ogden_paras, Treloar_UT_strain)-Treloar_UT_stress) .* (Ogden_UT(Ogden_paras, Treloar_UT_strain)-Treloar_UT_stress))...
+          + sum((Ogden_ET(Ogden_paras, Treloar_ET_strain)-Treloar_ET_stress) .* (Ogden_ET(Ogden_paras, Treloar_ET_strain)-Treloar_ET_stress))...
+          + sum((Ogden_PS(Ogden_paras, Treloar_PS_strain)-Treloar_PS_stress) .* (Ogden_PS(Ogden_paras, Treloar_PS_strain)-Treloar_PS_stress));
+
+disp(['Ogden residual norm = ' num2str(Ogden_res)]);
+
+
 % Prescribed stretch
 x_UT = linspace(1.0, max(Treloar_UT_strain), 25);
 x_ET = linspace(1.0, max(Treloar_ET_strain), 25);
@@ -142,6 +156,19 @@ GS_PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( ter
 x_UT = linspace(1.0, max(Treloar_UT_strain), 25);
 x_ET = linspace(1.0, max(Treloar_ET_strain), 25);
 x_PS = linspace(1.0, max(Treloar_PS_strain), 25);
+
+% Residual norm
+GS_res = sum((GS_UT(GS_paras, Treloar_UT_strain)-Treloar_UT_stress) .* (GS_UT(GS_paras, Treloar_UT_strain)-Treloar_UT_stress))...
+       + sum((GS_ET(GS_paras, Treloar_ET_strain)-Treloar_ET_stress) .* (GS_ET(GS_paras, Treloar_ET_strain)-Treloar_ET_stress))...
+       + sum((GS_PS(GS_paras, Treloar_PS_strain)-Treloar_PS_stress) .* (GS_PS(GS_paras, Treloar_PS_strain)-Treloar_PS_stress));
+
+disp(['GS residual norm = ' num2str(GS_res)]);
+
+Ogden_res = sum((Ogden_UT(Ogden_paras, Treloar_UT_strain)-Treloar_UT_stress) .* (Ogden_UT(Ogden_paras, Treloar_UT_strain)-Treloar_UT_stress))...
+          + sum((Ogden_ET(Ogden_paras, Treloar_ET_strain)-Treloar_ET_stress) .* (Ogden_ET(Ogden_paras, Treloar_ET_strain)-Treloar_ET_stress))...
+          + sum((Ogden_PS(Ogden_paras, Treloar_PS_strain)-Treloar_PS_stress) .* (Ogden_PS(Ogden_paras, Treloar_PS_strain)-Treloar_PS_stress));
+
+disp(['Ogden residual norm = ' num2str(Ogden_res)]);
 
 % Plot
 figure;
