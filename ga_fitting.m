@@ -9,7 +9,7 @@ Treloar_ET_stress = importdata("./Treloar-ET/stress.txt");
 
 Treloar_PS_strain = importdata("./Treloar-PS/strain.txt");
 Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
-Model_name = 'Ogden4 Model';
+Model_name = 'CR Model';
 
 [paras, UT, ET, PS] = curve_fitting(Model_name, ...
                                     Treloar_UT_strain, Treloar_UT_stress, ...
@@ -49,6 +49,7 @@ legend('UT of experimental data', ['UT fitted by ', Model_name],...
 title('Data and Fitted Curves', 'FontSize', 14);
 xlabel('Stretch', 'FontSize', 12);
 ylabel('P_{11} of 1st PK stress', 'FontSize', 12);
+saveas(gcf, [Model_name, '.png']);
 
 % Curve fitting function
 function [paras, UT, ET, PS] = curve_fitting(Model_name, ...
@@ -60,10 +61,10 @@ switch Model_name
         [lb, ub, nvars, UT, ET, PS] = Ogden_Model_Init();
     case 'Ogden4 Model'
         [lb, ub, nvars, UT, ET, PS] = Ogden4_Model_Init();
-    case 'GS Model'
-        [lb, ub, nvars, UT, ET, PS] = GS_Model_Init();
-    case 'GS4 Model'
-        [lb, ub, nvars, UT, ET, PS] = GS4_Model_Init();
+    case 'CR Model'
+        [lb, ub, nvars, UT, ET, PS] = CR_Model_Init();
+    case 'CR4 Model'
+        [lb, ub, nvars, UT, ET, PS] = CR4_Model_Init();
     case 'AB Model'
         [lb, ub, nvars, UT, ET, PS] = AB_Model_Init();
     case 'MR Model'
@@ -77,32 +78,32 @@ objectiveFunction = @(x) objective(x, UT_strain, UT_stress, ET_strain, ET_stress
 options = optimoptions('ga', 'MaxGenerations', 10000, 'Display', 'iter', 'UseParallel', true);
 [paras, ~] = ga(objectiveFunction, nvars, [], [], [], [], lb, ub, [], options);
 
-resnorm = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
+resnorm = objective(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
 disp(['Residual norm = ' num2str(resnorm)]);
 end
 
 % Objective function
 function res = objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)
     
-    res = sum((UT(x, UT_strain) - UT_stress).^2) ./ length(UT_strain)+ ...
-          sum((ET(x, ET_strain) - ET_stress).^2) ./ length(ET_strain)+ ...
-          sum((PS(x, PS_strain) - PS_stress).^2) ./ length(PS_strain);
+    res = sum((UT(x, UT_strain) - UT_stress).^2) + ...
+          sum((ET(x, ET_strain) - ET_stress).^2) + ...
+          sum((PS(x, PS_strain) - PS_stress).^2) ;
 end
 
-function f = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)    
-    res_UT = UT(paras, UT_strain) - UT_stress;
-    res_ET = ET(paras, ET_strain) - ET_stress;
-    res_PS = PS(paras, PS_strain) - PS_stress;
-    
-    f = sum(res_UT.^2) ./ length(UT_strain) + ...
-        sum(res_ET.^2) ./ length(ET_strain) + ...
-        sum(res_PS.^2) ./ length(PS_strain);
-end
+% function f = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)    
+%     res_UT = UT(paras, UT_strain) - UT_stress;
+%     res_ET = ET(paras, ET_strain) - ET_stress;
+%     res_PS = PS(paras, PS_strain) - PS_stress;
+% 
+%     f = sum(res_UT.^2) ./ length(UT_strain) + ...
+%         sum(res_ET.^2) ./ length(ET_strain) + ...
+%         sum(res_PS.^2) ./ length(PS_strain);
+% end
 
-% Initialize GS Model
-function [lb, ub, nvars, UT, ET, PS] = GS_Model_Init()
-lb = [-Inf, -Inf, 0, -Inf, -Inf, 0];
-ub = [Inf, Inf, Inf, Inf, Inf, Inf];
+% Initialize CR Model
+function [lb, ub, nvars, UT, ET, PS] = CR_Model_Init()
+lb = [-10, -10, 0, -10, -10, 0];
+ub = [10, 10, 10, 10, 10, 10];
 nvars = 6;
 % tool function for generalized strain
 term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
@@ -115,8 +116,8 @@ PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(
 
 end
 
-% Initialize GS4 Model (4 parameters)
-function [lb, ub, nvars, UT, ET, PS] = GS4_Model_Init()
+% Initialize CR4 Model (4 parameters)
+function [lb, ub, nvars, UT, ET, PS] = CR4_Model_Init()
 lb = [-3, -3, 0, 0];
 ub = [3, 3, 1, 1];
 nvars = 4;

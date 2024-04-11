@@ -9,7 +9,7 @@ Treloar_ET_stress = importdata("./Treloar-ET/stress.txt");
 
 Treloar_PS_strain = importdata("./Treloar-PS/strain.txt");
 Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
-Model_name = 'GS Model';
+Model_name = 'Ogden Model';
 
 [paras, UT, ET, PS] = curve_fitting(Model_name, ...
                                     Treloar_UT_strain, Treloar_UT_stress, ...
@@ -23,32 +23,37 @@ PS_x = linspace(1.0, max(Treloar_PS_strain), 25);
 figure;
 hold on;
 
-plot(Treloar_UT_strain, Treloar_UT_stress, 'ko', 'MarkerFaceColor', 'k', 'MarkerSize', 8); 
-plot(UT_x, UT(paras, UT_x), 'Color', [0.7, 0.7, 0.7], 'LineWidth', 2, 'LineStyle', '-');
+plot(Treloar_UT_strain, Treloar_UT_stress, 'ko', 'MarkerFaceColor', 'k', 'MarkerSize', 10); 
+plot(UT_x, UT(paras, UT_x), 'Color', 'k', 'LineWidth', 2, 'LineStyle', '-');
 
-plot(Treloar_ET_strain, Treloar_ET_stress, 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 8); 
-plot(ET_x, ET(paras, ET_x), 'Color', [0.85, 0.33, 0], 'LineWidth', 2); % 橙色
+plot(Treloar_ET_strain, Treloar_ET_stress, 'ro', 'MarkerFaceColor', 'r', 'MarkerSize', 10); 
+plot(ET_x, ET(paras, ET_x), 'Color', 'r', 'LineWidth', 2);
 
-plot(Treloar_PS_strain, Treloar_PS_stress, 'bo', 'MarkerFaceColor', 'b', 'MarkerSize', 8); 
-plot(PS_x, PS(paras, PS_x), 'Color', [0, 0.5, 0.5], 'LineWidth', 2); % 青色
+plot(Treloar_PS_strain, Treloar_PS_stress, 'bo', 'MarkerFaceColor', 'b', 'MarkerSize', 10); 
+plot(PS_x, PS(paras, PS_x), 'Color', 'b', 'LineWidth', 2);
 
 hold off;
 grid off;
 
 format long
 disp('Fitted Parameters:');
-for i = 1:numel(paras)
-    fprintf('Parameter %d: %.6e\n', i, paras(i));
+for i = 1:3
+    fprintf('weight %d: %.6e\n', i, paras(i));
+end
+
+for i = 4:numel(paras)
+    fprintf('para %d: %.6e\n', i-3, paras(i));
 end
 
 legend('UT of experimental data', ['UT fitted by ', Model_name],...
     'ET of experimental data', ['ET fitted by ', Model_name],...
     'PS of experimental data', ['PS fitted by ', Model_name],...
-    'Location', 'NorthWest', 'FontSize', 14);
+    'Location', 'NorthWest', 'FontSize', 12);
 
-title('Data and Fitted Curves', 'FontSize', 14);
-xlabel('Stretch', 'FontSize', 12);
-ylabel('P_{11} of 1st PK stress', 'FontSize', 12);
+title(['Data and Fitted Curves by ', Model_name], 'FontSize', 12);
+xlabel('Stretch', 'FontSize', 18);
+ylabel('P_{11} of 1st PK stress', 'FontSize', 18);
+saveas(gcf, [Model_name, '.png']);
 
 % Curve fitting function
 function [paras, UT, ET, PS] = curve_fitting(Model_name, ...
@@ -60,10 +65,10 @@ switch Model_name
         [paras_0, lb, ub, UT, ET, PS] = Ogden_Model_Init();
     case 'Ogden4 Model'
         [paras_0, lb, ub, UT, ET, PS] = Ogden4_Model_Init();
-    case 'GS Model'
-        [paras_0, lb, ub, UT, ET, PS] = GS_Model_Init();
-    case 'GS4 Model'
-        [paras_0, lb, ub, UT, ET, PS] = GS4_Model_Init();
+    case 'CR Model'
+        [paras_0, lb, ub, UT, ET, PS] = CR_Model_Init();
+    case 'CR4 Model'
+        [paras_0, lb, ub, UT, ET, PS] = CR4_Model_Init();
     case 'AB Model'
         [paras_0, lb, ub, UT, ET, PS] = AB_Model_Init();
     case 'MR Model'
@@ -72,36 +77,36 @@ switch Model_name
         error('ERROR: WRONG INPUT MODEL_NAME!');
 end
 
-objectiveFunction = @(x) objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
-
+objectiveFunction = @(xi) objective(xi, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
 options = optimoptions('lsqnonlin', 'Algorithm', 'interior-point', 'MaxIterations', 5000);
-[paras, ~] = lsqnonlin( objectiveFunction, paras_0, lb, ub, options );
+[paras, ~] = lsqnonlin( objectiveFunction, paras_0, lb, ub, options);
 
 resnorm = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
 disp(['Residual norm = ' num2str(resnorm)]);
+value = objective(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
+disp(['Objective value = ' num2str(value)]);
 end
 
 % Objective function
-function res = objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)
-    
-    res = sum((UT(x, UT_strain) - UT_stress).^2) ./ length(UT_strain)+ ...
-          sum((ET(x, ET_strain) - ET_stress).^2) ./ length(ET_strain)+ ...
-          sum((PS(x, PS_strain) - PS_stress).^2) ./ length(PS_strain);
-end
-function f = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)    
-    res_UT = UT(paras, UT_strain) - UT_stress;
-    res_ET = ET(paras, ET_strain) - ET_stress;
-    res_PS = PS(paras, PS_strain) - PS_stress;
-    
-    f = sum(res_UT.^2) ./ length(UT_strain) + ...
-        sum(res_ET.^2) ./ length(ET_strain) + ...
-        sum(res_PS.^2) ./ length(PS_strain);
+function res = objective(xi, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)
+
+res = sum((UT(xi, UT_strain) - UT_stress).^2) ./ length(UT_strain)+ ...
+      sum((ET(xi, ET_strain) - ET_stress).^2) ./ length(ET_strain)+ ...
+      sum((PS(xi, PS_strain) - PS_stress).^2) ./ length(PS_strain);
 end
 
-% Initialize GS Model
-function [paras_0, lb, ub, UT, ET, PS] = GS_Model_Init()
-lb = [-Inf, -Inf, 0, -Inf, -Inf, 0];
-ub = [Inf, Inf, Inf, Inf, Inf, Inf];
+% Residual
+function ff = res(xi, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)
+
+ff = sum((UT(xi, UT_strain) - UT_stress).^2)+ ...
+     sum((ET(xi, ET_strain) - ET_stress).^2)+ ...
+     sum((PS(xi, PS_strain) - PS_stress).^2);
+end
+
+% Initialize CR Model
+function [paras_0, lb, ub, UT, ET, PS] = CR_Model_Init()
+lb = [-Inf, -Inf,   0,-Inf, -Inf,   0];
+ub = [ Inf,  Inf, Inf, Inf,  Inf, Inf];
 
 paras_0 = [1.0, 1.0, 1.0, 1.0, 1.0, 2.0];
 
@@ -113,11 +118,10 @@ term2 = @(x, xdata) 2*x(6)*(xdata.^x(5) - xdata.^(-x(4))) .* ((x(5).*(xdata.^(x(
 UT = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-1.5)) .* ( term1(x, xdata.^(-0.5)) + term2(x, xdata.^(-0.5)) );
 ET = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-3.0)) .* ( term1(x, xdata.^(-2.0)) + term2(x, xdata.^(-2.0)) );
 PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(x, xdata.^(-1.0)) + term2(x, xdata.^(-1.0)) );
-
 end
 
-% Initialize GS4 Model (4 parameters)
-function [paras_0, lb, ub, UT, ET, PS] = GS4_Model_Init()
+% Initialize CR4 Model (4 parameters)
+function [paras_0, lb, ub, UT, ET, PS] = CR4_Model_Init()
 lb = [-Inf, -Inf, 0, 0];
 ub = [Inf, Inf, Inf, Inf];
 paras_0 = [1.0, 1.0, 1.0, 1.0];
