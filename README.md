@@ -10,7 +10,9 @@ The directories contain stretch λ₁ and stress P₁ data in text file.
 
 ![UT-diagram](./figures/UT-diagram.jpg)
 
-$F = \begin{bmatrix} \lambda & 0 & 0 \\ 0 & \frac{1}{\sqrt{\lambda}} & 0 \\ 0 & 0 & \frac{1}{\sqrt{\lambda}} \\ \end{bmatrix},\quad P = \begin{bmatrix} P_1 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \\ \end{bmatrix}$
+$$
+F = \begin{bmatrix} \lambda & 0 & 0 \\ 0 & \frac{1}{\sqrt{\lambda}} & 0 \\ 0 & 0 & \frac{1}{\sqrt{\lambda}} \\ \end{bmatrix},\quad P = \begin{bmatrix} P_1 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 0 \\ \end{bmatrix}
+$$
 
 Note that $P_1 = \mathbf{P}_{11}$ and $\mathbf{P}_{22}=\mathbf{P}_{33}=0$, and the Cauchy stress tensor of incompressible hyperelastic material is
 
