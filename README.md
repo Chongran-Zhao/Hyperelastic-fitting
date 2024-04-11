@@ -10,7 +10,7 @@ The directories contain stretch $\lambda_1$ and stress $P_1$ data in text file.
 
 - **Uniaxial Tensile**
 
-<img src="/Users/chongran/Parameter-Identification/figures/UT-diagram.jpg" alt="UT-diagram" style="zoom:50%;" />
+<img src="Parameter-Identification/figures/UT-diagram.jpg" alt="UT-diagram" style="zoom:50%;" />
 $$
 \mathbf{F}=\begin{bmatrix}
 \lambda & 0 & 0 \\
