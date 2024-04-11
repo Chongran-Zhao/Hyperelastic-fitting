@@ -10,8 +10,8 @@ The directories contain stretch $\lambda_1$ and stress $P_1$ data in text file.
 
 - **Uniaxial Tensile**
 
-<img src="Parameter-Identification/figures/UT-diagram.jpg" alt="UT-diagram" style="zoom:50%;" />
-$$
+<img src="./figures/UT-diagram.jpg" alt="UT-diagram" style="zoom:50%;" />
+\begin{align}
 \mathbf{F}=\begin{bmatrix}
 \lambda & 0 & 0 \\
 0 & \frac{1}{\sqrt{\lambda}} & 0 \\
@@ -21,7 +21,7 @@ P_1 & 0 & 0 \\
 0 & 0 & 0 \\
 0 & 0 & 0 \\
 \end{bmatrix}
-$$
+\end{align}
 Note that $P_1 = \mathbf{P}_{11}$ and $\mathbf{P}_{22}=\mathbf{P}_{33}=0$, and the Cauchy stress tensor of incompressible hyperelastic material is
 $$
 \begin{aligned}
