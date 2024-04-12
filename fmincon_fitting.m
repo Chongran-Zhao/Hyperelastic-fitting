@@ -9,7 +9,7 @@ Treloar_ET_stress = importdata("./Treloar-ET/stress.txt");
 
 Treloar_PS_strain = importdata("./Treloar-PS/strain.txt");
 Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
-Model_name = 'Ogden4 Model';
+Model_name = 'CR Model';
 
 [paras, UT, ET, PS] = curve_fitting(Model_name, ...
                                     Treloar_UT_strain, Treloar_UT_stress, ...
@@ -64,10 +64,10 @@ switch Model_name
         [paras_0, lb, ub, UT, ET, PS] = Ogden_Model_Init();
     case 'Ogden4 Model'
         [paras_0, lb, ub, UT, ET, PS] = Ogden4_Model_Init();
-    case 'GS Model'
-        [paras_0, lb, ub, UT, ET, PS] = GS_Model_Init();
-    case 'GS4 Model'
-        [paras_0, lb, ub, UT, ET, PS] = GS4_Model_Init();
+    case 'CR Model'
+        [paras_0, lb, ub, UT, ET, PS] = CR_Model_Init();
+    case 'CR4 Model'
+        [paras_0, lb, ub, UT, ET, PS] = CR4_Model_Init();
     case 'AB Model'
         [paras_0, lb, ub, UT, ET, PS] = AB_Model_Init();
     case 'MR Model'
@@ -99,9 +99,9 @@ function f = objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain,
     res_ET = ET(paras, ET_strain) - ET_stress;
     res_PS = PS(paras, PS_strain) - PS_stress;
     
-    f = weights(1) * sum(res_UT.^2) ./ length(UT_strain) + ...
-        weights(2) * sum(res_ET.^2) ./ length(ET_strain) + ...
-        weights(3) * sum(res_PS.^2) ./ length(PS_strain);
+    f = weights(1) * sum(res_UT.^2) + ...
+        weights(2) * sum(res_ET.^2) + ...
+        weights(3) * sum(res_PS.^2) ;
 end
 
 function f = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)    
@@ -109,9 +109,9 @@ function f = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, P
     res_ET = ET(paras, ET_strain) - ET_stress;
     res_PS = PS(paras, PS_strain) - PS_stress;
     
-    f = sum(res_UT.^2) ./ length(UT_strain) + ...
-        sum(res_ET.^2) ./ length(ET_strain) + ...
-        sum(res_PS.^2) ./ length(PS_strain);
+    f = sum(res_UT.^2) + ...
+        sum(res_ET.^2) + ...
+        sum(res_PS.^2);
 end
 
 % Nonlinear constraint function
@@ -121,8 +121,8 @@ function [c, ceq] = nonlcon_func(x)
     ceq = sum(weights) - 1; % Ensure the sum of weights is 1
 end
 
-% Initialize GS Model
-function [paras_0, lb, ub, UT, ET, PS] = GS_Model_Init()
+% Initialize CR Model
+function [paras_0, lb, ub, UT, ET, PS] = CR_Model_Init()
 lb = [-Inf, -Inf, 0, -Inf, -Inf, 0];
 ub = [Inf, Inf, Inf, Inf, Inf, Inf];
 paras_0 = [1.0, 1.0, 1.0, 2.0, 2.0, 2.0];
@@ -137,8 +137,8 @@ ET = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-3.0)) .* ( term1(
 PS = @(x, xdata) term1(x, xdata) + term2(x, xdata) - (xdata.^(-2.0)) .* ( term1(x, xdata.^(-1.0)) + term2(x, xdata.^(-1.0)) );
 end
 
-% Initialize GS4 Model (4 parameters)
-function [paras_0, lb, ub, UT, ET, PS] = GS4_Model_Init()
+% Initialize CR4 Model (4 parameters)
+function [paras_0, lb, ub, UT, ET, PS] = CR4_Model_Init()
 lb = [-Inf, -Inf, 0, 0];
 ub = [Inf, Inf, Inf, Inf];
 paras_0 = [1.0, 2.0, 4, 1.0];

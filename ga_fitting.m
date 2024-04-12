@@ -85,9 +85,9 @@ end
 % Objective function
 function res = objective(x, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)
     
-    res = sum((UT(x, UT_strain) - UT_stress).^2) + ...
-          sum((ET(x, ET_strain) - ET_stress).^2) + ...
-          sum((PS(x, PS_strain) - PS_stress).^2) ;
+    res = sum((UT(x, UT_strain) - UT_stress).^2) ./ length(UT_strain) + ...
+          sum((ET(x, ET_strain) - ET_stress).^2) ./ length(ET_strain) + ...
+          sum((PS(x, PS_strain) - PS_stress).^2) ./ length(PS_strain);
 end
 
 % function f = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)    
@@ -102,8 +102,8 @@ end
 
 % Initialize CR Model
 function [lb, ub, nvars, UT, ET, PS] = CR_Model_Init()
-lb = [-10, -10, 0, -10, -10, 0];
-ub = [10, 10, 10, 10, 10, 10];
+lb = [-2, -2, 0, -2, -2, 0];
+ub = [2, 2, 10, 2, 2, 10];
 nvars = 6;
 % tool function for generalized strain
 term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
@@ -135,8 +135,8 @@ end
 % Initialize Ogden Model
 function [lb, ub, nvars, UT, ET, PS] = Ogden_Model_Init()
 
-lb = [-2, -2, -2, -2, 0, 0];
-ub = [0, 0, 0, 0, 10, 10];
+lb = [-1, -1, -5, -1, -1, -5];
+ub = [ 1,  1,  5,  1,  1,  5];
 nvars = 6;
 
 UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ...
