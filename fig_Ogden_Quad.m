@@ -17,8 +17,8 @@ Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
 
 % Ogden_paras = [mu_1, alpha_1, mu_2, alpha_2, mu_3, alpha_3]
 % Unit of mu: MPa
-Ogden_paras = [4.05965e-1, 1.819059, -1.879932e-3, -2.595254, 1.822613e-6, 8.189521];
-
+% Ogden_paras = [4.05965e-1, 1.819059, -1.879932e-3, -2.595254, 1.822613e-6, 8.189521];
+Ogden_paras = [-0.00399450312646, -2.357101026245013, 0.000056818096938, 6.540469509568156, 0.516156037978041, 1.559863937925930];
 % P_11 of Ogden Model
 Ogden_UT = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-0.5 * x(2) - 1.0) ) ... 
 + x(3) * ( xdata .^ (x(4) - 1.0) - xdata .^ (-0.5 * x(4) - 1.0) ) ...
@@ -34,7 +34,7 @@ Ogden_PS = @(x, xdata) x(1) * ( xdata .^ (x(2) - 1.0) - xdata .^ (-1.0 * x(2) - 
 
 % GS_paras = [n_1, m_1, mu_1, n_2, m_2, mu_2] 
 % Unit of mu: MPa
-GS_paras = [-9.612114e-1, -4.577532e-1, 3.535054e-1, 2.384084, 3.98994, 1.37801e-5];
+GS_paras = [-0.961211379695161, -0.457753246616541, 0.353505442226954, 2.384084327573897, 3.989939972681667, 0.000013890096421];
 
 % tool function for generalized strain
 term1 = @(x, xdata) 2*x(3)*(xdata.^x(2) - xdata.^(-x(1))) .* ((x(2).*(xdata.^(x(2)-1)) + x(1).*(xdata.^(-x(1)-1)) )  / (x(2)+x(1)).^2);
@@ -80,14 +80,14 @@ plot(x_PS, GS_PS(GS_paras, x_PS), 'Color', 'b', 'LineWidth', 2, 'LineStyle', '-'
 
 hold off;
 
-legend('UT Experimental', 'UT Quadratic Model',...
-       'ET Experimental', 'ET Quadratic Model',...
-       'PS Experimental', 'PS Quadratic Model',...
-       'Location', 'northwest', 'FontSize', 16);
+legend('UT Experimental', 'UT Generalized Strain Energy Model',...
+       'ET Experimental', 'ET Generalized Strain Energy Model',...
+       'PS Experimental', 'PS Generalized Strain Energy Model',...
+       'Location', 'northwest', 'FontSize', 18);
 
-title('Quadratic Model Fitted Curves', 'FontSize', 18);
-xlabel('Stretch', 'FontSize', 16);
-ylabel('P_{11} Stress (MPa)', 'FontSize', 16);
+title('Generalized Strain Energy Model Fitted Curves', 'FontSize', 20);
+xlabel('Stretch', 'FontSize', 20);
+ylabel('P_{11} Stress (MPa)', 'FontSize', 20);
 
 saveas(gcf, 'GS.png');
 
@@ -110,11 +110,11 @@ hold off;
 legend('UT Experimental', 'UT Ogden Model',...
        'ET Experimental', 'ET Ogden Model',...
        'PS Experimental', 'PS Ogden Model',...
-       'Location', 'northwest', 'FontSize', 16);
+       'Location', 'northwest', 'FontSize', 18);
 
-title('Ogden Model Fitted Curves', 'FontSize', 18);
-xlabel('Stretch', 'FontSize', 16);
-ylabel('P_{11} Stress (MPa)', 'FontSize', 16);
+title('Ogden Model Fitted Curves', 'FontSize', 20);
+xlabel('Stretch', 'FontSize', 20);
+ylabel('P_{11} Stress (MPa)', 'FontSize', 20);
 
 saveas(gcf, 'Ogden.png');
 
