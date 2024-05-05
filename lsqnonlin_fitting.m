@@ -9,7 +9,7 @@ Treloar_ET_stress = importdata("./Treloar-ET/stress.txt");
 
 Treloar_PS_strain = importdata("./Treloar-PS/strain.txt");
 Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
-Model_name = 'Ogden Model';
+Model_name = 'CR Model';
 
 [paras, UT, ET, PS] = curve_fitting(Model_name, ...
                                     Treloar_UT_strain, Treloar_UT_stress, ...
