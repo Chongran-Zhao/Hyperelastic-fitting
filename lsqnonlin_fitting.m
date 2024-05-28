@@ -9,9 +9,9 @@ Treloar_ET_stress = importdata("./Treloar-ET/stress.txt");
 
 Treloar_PS_strain = importdata("./Treloar-PS/strain.txt");
 Treloar_PS_stress = importdata("./Treloar-PS/stress.txt");
-Model_name = 'CR Model';
+Model_name = 'MR Model';
 
-[paras, UT, ET, PS] = curve_fitting(Model_name, ...
+[paras, UT, ET, PS, resnorm] = curve_fitting(Model_name, ...
                                     Treloar_UT_strain, Treloar_UT_stress, ...
                                     Treloar_ET_strain, Treloar_ET_stress, ...
                                     Treloar_PS_strain, Treloar_PS_stress);
@@ -32,28 +32,52 @@ plot(ET_x, ET(paras, ET_x), 'Color', 'r', 'LineWidth', 2);
 plot(Treloar_PS_strain, Treloar_PS_stress, 'bo', 'MarkerFaceColor', 'b', 'MarkerSize', 10); 
 plot(PS_x, PS(paras, PS_x), 'Color', 'b', 'LineWidth', 2);
 
-hold off;
-grid off;
-
 format long
 disp('Fitted Parameters:');
 
 for i = 1:numel(paras)
     fprintf('para %d: %.6e\n', i, paras(i));
 end
+ylim( [0, 6] );
+xlim( [1, 8] );
 
-legend('UT of experimental data', ['UT fitted by ', Model_name],...
-    'ET of experimental data', ['ET fitted by ', Model_name],...
-    'PS of experimental data', ['PS fitted by ', Model_name],...
-    'Location', 'NorthWest', 'FontSize', 12);
 
-title(['Data and Fitted Curves by ', Model_name], 'FontSize', 12);
-xlabel('Stretch', 'FontSize', 18);
-ylabel('P_{11} of 1st PK stress', 'FontSize', 18);
+hXLabel = xlabel('Stretch', 'interpreter', 'latex');
+hYLabel = ylabel('Nominal stress (MPa)', 'interpreter', 'latex');
+
+set( gca, 'Box', 'on', 'TickDir'     , 'out', ...
+    'TickLength'  , [.02 .02], ...
+    'XMinorTick'  , 'on'      , ...
+    'YMinorTick'  , 'on'  , ...
+    'YGrid'       , 'on' , ...
+    'XGrid'       , 'on' , ...
+    'XColor'      , [0 0 0 ], ...
+    'YColor'      , [0 0 0 ], ...
+    'LineWidth'   , 2 );
+set(gca,'FontSize', 25,'fontWeight','bold');
+set([hXLabel, hYLabel], 'FontName', 'Helvetica', 'FontSize', 30, 'FontWeight', 'bold');
+
+l = legend( 'UT Exp', 'ET Exp', 'PS Exp', ...
+            'UT Sim', 'ET Sim', 'PS Sim' );
+set( l, 'interpreter','latex', 'fontsize', 25, 'box', 'off', 'location', 'SouthOutside', 'Orientation', ...
+     'horizontal', 'FontWeight', 'bold', 'FontName', 'Helvetica', 'NumColumns', 3 );
+l.ItemTokenSize=[45,45];
+text(5.2, 0.5, ['$\chi^2$ = ', num2str(resnorm)], 'Interpreter', 'latex', 'FontSize', 40);
+X = 42.0;
+Y = X * 1.2;
+xMargin = 3;
+yMargin = 3;
+xSize = X - 2 * xMargin;
+ySize = Y - 2 * yMargin;
+set(gcf, 'Units','centimeters', 'Position',[5 5 xSize ySize]);
+set(gcf, 'PaperUnits','centimeters');
+set(gcf, 'PaperSize',[X Y]);
+set(gcf, 'PaperPosition',[xMargin yMargin xSize ySize]);
+set(gcf, 'PaperOrientation','portrait');
+
 saveas(gcf, [Model_name, '.png']);
-
 % Curve fitting function
-function [paras, UT, ET, PS] = curve_fitting(Model_name, ...
+function [paras, UT, ET, PS, resnorm] = curve_fitting(Model_name, ...
                                              UT_strain, UT_stress, ...
                                              ET_strain, ET_stress, ...
                                              PS_strain, PS_stress)
@@ -77,7 +101,6 @@ end
 objectiveFunction = @(xi) objective(xi, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
 options = optimoptions('lsqnonlin', 'Algorithm', 'interior-point', 'MaxIterations', 5000);
 [paras, ~] = lsqnonlin( objectiveFunction, paras_0, lb, ub, options);
-
 resnorm = res(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
 disp(['Residual norm = ' num2str(resnorm)]);
 value = objective(paras, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS);
@@ -87,17 +110,34 @@ end
 % Objective function
 function res = objective(xi, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)
 
-res = sum((UT(xi, UT_strain) - UT_stress).^2) ./ length(UT_strain)+ ...
-      sum((ET(xi, ET_strain) - ET_stress).^2) ./ length(ET_strain)+ ...
-      sum((PS(xi, PS_strain) - PS_stress).^2) ./ length(PS_strain);
+% mean square difference
+% res = sum((UT(xi, UT_strain) - UT_stress).^2) ./ length(UT_strain)+ ...
+%       sum((ET(xi, ET_strain) - ET_stress).^2) ./ length(ET_strain)+ ...
+%       sum((PS(xi, PS_strain) - PS_stress).^2) ./ length(PS_strain);
+
+% Relative Error (RE)
+res = 100 ./ length(UT_strain) .* sum( abs(UT(xi, UT_strain) - UT_stress)) ./ max([UT(xi, UT_strain), UT_stress])...
+    + 100 ./ length(ET_strain) .* sum( abs(ET(xi, ET_strain) - ET_stress)) ./ max([ET(xi, ET_strain), ET_stress])...
+    + 100 ./ length(PS_strain) .* sum( abs(PS(xi, PS_strain) - PS_stress)) ./ max([PS(xi, PS_strain), PS_stress]);
+
+%  normalized mean absolute difference
+% res = 100 .* sum( abs(UT(xi, UT_strain) - UT_stress)) ./ length(UT_strain) ./ max( [ sum(abs(UT(xi, UT_strain)))/ length(UT_strain), sum(abs(UT_strain))/length(UT_strain) ] )...
+%     + 100 .* sum( abs(ET(xi, ET_strain) - ET_stress)) ./ length(ET_strain) ./ max( [ sum(abs(ET(xi, ET_strain)))/ length(ET_strain), sum(abs(ET_strain))/length(ET_strain) ] )...
+%     + 100 .* sum( abs(PS(xi, PS_strain) - PS_stress)) ./ length(PS_strain) ./ max( [ sum(abs(PS(xi, PS_strain)))/ length(PS_strain), sum(abs(PS_strain))/length(PS_strain) ] );
+
+% coefficient of determination
+% res = 1.0 - sum((UT(xi, UT_strain) - UT_stress).^2) ./ sum((UT_stress - (max(UT_stress))*ones(size(UT_stress))).^2)...
+%     + 1.0 - sum((ET(xi, ET_strain) - ET_stress).^2) ./ sum((ET_stress - (max(ET_stress))*ones(size(ET_stress))).^2)...
+%     + 1.0 - sum((PS(xi, PS_strain) - PS_stress).^2) ./ sum((PS_stress - (max(PS_stress))*ones(size(PS_stress))).^2);
+% disp(size(res));
 end
 
 % Residual
 function ff = res(xi, UT_strain, UT_stress, ET_strain, ET_stress, PS_strain, PS_stress, UT, ET, PS)
 
-ff = sum((UT(xi, UT_strain) - UT_stress).^2)+ ...
-     sum((ET(xi, ET_strain) - ET_stress).^2)+ ...
-     sum((PS(xi, PS_strain) - PS_stress).^2);
+ff = sum((UT(xi, UT_strain) - UT_stress).^2) ./ length(UT_strain)+ ...
+     sum((ET(xi, ET_strain) - ET_stress).^2) ./ length(ET_strain)+ ...
+     sum((PS(xi, PS_strain) - PS_stress).^2) ./ length(PS_strain);
 end
 
 % Initialize CR Model
