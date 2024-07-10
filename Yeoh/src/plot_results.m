@@ -16,7 +16,7 @@ lambda_2(:) = Ft_2(1,1,:);
 lambda_3(:) = Ft_3(1,1,:);
 
 figure;
-ax = axes('Position', [0.1 0.6 0.8 0.4], 'Box', 'on');
+ax = axes('Position', [0.1 0.4 0.8 0.5], 'Box', 'on');
 plot(ax, lambda_1, P_exp_1, 'Color', '#003f5c', 'Marker', 'o', 'MarkerFaceColor', '#003f5c', 'MarkerSize', 12, 'LineStyle', 'none');
 hold(ax, 'on');
 plot(ax, lambda_1, P_pre_1, 'linewidth', 3.0, 'Color', '#003f5c', 'LineStyle', '-');
@@ -60,7 +60,7 @@ set(gcf, 'PaperOrientation', 'portrait');
 
 x_location = 7.0;
 y_location = 0.1;
-delta_y = 0.6;
+delta_y = 0.5;
 % print R^2
 R_square = (get_R_square(P_exp_1, P_pre_1) + get_R_square(P_exp_2, P_pre_2) + get_R_square(P_exp_3, P_pre_3)) / 3.0;
 text_R_square = sprintf('$R^2=%.4g$', R_square);
@@ -106,8 +106,8 @@ text(x_location, y_location, text_MSD, ...
 
 % print parameters
 text_xi = cell(length(xi), 1);
-x_location = 2.5;
-y_location = -3.0;
+x_location = 2.0;
+y_location = -2.0;
 delta_x = 2.0;
 for ii = 1:length(xi)
     text_xi{ii} = sprintf('$C_%d = %.4g$', ii, xi(ii));
