@@ -15,5 +15,4 @@ switch name
                 out = 1/(m+n) * ( m * exp( m*(lambda-1.0) ) + n / lambda^2 * exp( n*(1/lambda-1.0) ) );
         end
 end
-
 end
