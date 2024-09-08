@@ -3,9 +3,9 @@ switch name
     case 'Curnier-Rakotomanana'
         switch order
             case 0
-                out = 1/(m+n) * (lambda^m - lambda^(-n));
+                out = (lambda^m - lambda^(-n)) / (m+n);
             case 1
-                out = m/(m+n) * (m*lambda^(m-1) + n*lambda^(-n-1));
+                out = m/(m+n) * lambda^(m-1) + n/(m+n) * lambda^(-n-1);
         end
     case 'Darijani-Naghdabadi'
         switch order

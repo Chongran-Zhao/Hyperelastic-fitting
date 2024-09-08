@@ -1,15 +1,8 @@
 % refer to eqn. 2.8 of Liu, Guan, Zhao & Luo 2024 preprint
 % The input C can also be replaced by Gamma, because the transformation
 % of E and C is same with Ev and Gamma
-function out = get_proj_Q(name, m, n, C)
+function out = get_proj_Q(name, m, n, lambda1, lambda2, lambda3, N1, N2, N3)
 out = zeros(3,3,3,3);
-[V, D] = eig(C);
-N1 = V(:,1);
-N2 = V(:,2);
-N3 = V(:,3);
-lambda1 = sqrt(D(1,1));
-lambda2 = sqrt(D(2,2));
-lambda3 = sqrt(D(3,3));
 
 e1 = get_scale_der(name, m, n, lambda1, 0);
 e2 = get_scale_der(name, m, n, lambda2, 0);

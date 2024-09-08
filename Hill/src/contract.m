@@ -70,6 +70,13 @@ elseif length(size(A)) == 4 && length(size(B)) == 4
             end
         end
     end
+elseif length(size(A)) == 2 && length(size(B)) == 2
+    out = 0.0;
+    for ii = 1:3
+        for jj = 1:3
+            out = out + A(ii,jj) * B(ii,jj);
+        end
+    end
 else
     error("ERROR: wrong size of input!");
 end
