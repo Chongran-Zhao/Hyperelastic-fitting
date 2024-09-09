@@ -1,20 +1,24 @@
 function plot_results(paras, num,...
-    Ft_1, P_exp_1,...
-    Ft_2, P_exp_2,...
-    Ft_3, P_exp_3)
-[mu, alpha] = paras_to_array(paras, num);
-
-P_fit_1 = get_P_ij_list(1, 1, mu, alpha, Ft_1);
-P_fit_2 = get_P_ij_list(1, 1, mu, alpha, Ft_2);
-P_fit_3 = get_P_ij_list(1, 1, mu, alpha, Ft_3);
+                      F_list_1, P_exp_1,...
+                      F_list_2, P_exp_2,...
+                      F_list_3, P_exp_3)
+mu = [];
+alpha = [];
+for ii = 1:num
+    mu = [mu, paras(2*ii-1)];
+    alpha = [alpha, paras(2*ii)];
+end
+P_fit_1 = get_P_ij_list(1, 1, num, paras, F_list_1);
+P_fit_2 = get_P_ij_list(1, 1, num, paras, F_list_2);
+P_fit_3 = get_P_ij_list(1, 1, num, paras, F_list_3);
 
 lambda_1 = zeros(length(P_exp_1), 1);
 lambda_2 = zeros(length(P_exp_2), 1);
 lambda_3 = zeros(length(P_exp_3), 1);
 
-lambda_1(:) = Ft_1(1,1,:);
-lambda_2(:) = Ft_2(1,1,:);
-lambda_3(:) = Ft_3(1,1,:);
+lambda_1(:) = F_list_1(1,1,:);
+lambda_2(:) = F_list_2(1,1,:);
+lambda_3(:) = F_list_3(1,1,:);
 
 figure;
 ax = axes('Position', [0.1 0.4 0.8 0.5], 'Box', 'on');
