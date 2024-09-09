@@ -10,9 +10,9 @@ switch name
     case 'Darijani-Naghdabadi'
         switch order
             case 0
-                out = 1/(m+n) * ( exp( m*(lambda-1.0) ) - exp( n*(1/lambda-1.0) ) );
+                out = ( exp( m*(lambda-1.0) ) - exp( n*(1/lambda-1.0) ) ) / (m+n);
             case 1
-                out = 1/(m+n) * ( m * exp( m*(lambda-1.0) ) + n / lambda^2 * exp( n*(1/lambda-1.0) ) );
+                out = ( m * exp( m*(lambda-1.0) ) + n * lambda^(-2) * exp( n*(1/lambda-1.0) ) ) / (m+n);
         end
 end
 end
