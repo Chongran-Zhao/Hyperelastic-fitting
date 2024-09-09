@@ -1,7 +1,7 @@
 # Hyperelastic Material Deformation Calibration Code
 
 ## Overview
-This repository contains code used to **calibrate** the deformation of hyperelastic materials, providing accurate model predictions that closely match experimental data.
+This repository contains code used to **calibrate** the deformation of hyperelastic materials simultaneously, providing accurate model predictions that closely match experimental data.
 
 ## Author
 **Chongran Zhao**  
@@ -13,13 +13,13 @@ This repository contains code used to **calibrate** the deformation of hyperelas
 - [Experimental Data](#experimental-data)
 - [Continuum Basis](#continuum-basis)
 - [Calibration Details and Material Models](#calibration-details-and-material-models)
-- [Hills Hyperelastic Model with Generalized Strains](#hills-hyperelastic-model-with-generalized-strains)
+- [Hill's Hyperelastic Model with Generalized Strains](#hill's-hyperelastic-model-with-generalized-strains)
 - [Evaluation Functions (NMAD, MSD, R²)](#evaluation-functions-nmadr2)
 
 ## References
 
 ### Experimental Data
-The experimental data was extracted from:
+The experimental data of tests including uniaxial tensile, equi-biaxial tensile and pure shear, was extracted from:
 - Treloar, L. R. (1944). *Stress-strain data for vulcanized rubber under various types of deformation.* Rubber Chemistry and Technology, 17(4), 813-825.
 
 ### Continuum Basis
@@ -30,7 +30,7 @@ For a comprehensive understanding of the **continuum basis**, refer to:
 For insights into **calibration details** and a review of **material models**, see:
 - Dal, H., Açıkgöz, K., & Badienia, Y. (2021). *On the Performance of Isotropic Hyperelastic Constitutive Models for Rubber-like Materials: A State of the Art Review.* Applied Mechanics Reviews, 73(2), 020802.
 
-### Hills Hyperelastic Model with Generalized Strains
+### Hill's Hyperelastic Model with Generalized Strains
 Detailed information on the **Hills hyperelastic model** with **generalized strains** can be found in:
 - Liu, J., Guan, J., Zhao, C., & Luo, J. (2024). *A Continuum and Computational Framework for Viscoelastodynamics: III. A Nonlinear Theory.* Computer Methods in Applied Mechanics and Engineering, 430, 117248. [DOI: 10.1016/j.cma.2024.117248](https://doi.org/10.1016/j.cma.2024.117248)
 
