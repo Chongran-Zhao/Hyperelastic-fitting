@@ -28,12 +28,10 @@ F_ET_list(1,1,:) = lambda_ET;
 F_ET_list(2,2,:) = lambda_ET;
 F_ET_list(3,3,:) = lambda_ET.^(-2.0);
 
-% paras0 = [0.1];
-% lb = [0.0];
-% ub = [Inf];
-paras0 = [1.1, 100];
-lb = [0.0, 0.0];
-ub = [Inf, Inf];
+paras0 = [1.0];
+lb = [0.0];
+ub = [Inf];
+
 objectiveFunction = @(paras) objective(paras, F_UT_list, P1_UT);
 
 options = optimoptions('lsqnonlin', ...

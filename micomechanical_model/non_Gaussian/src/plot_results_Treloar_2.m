@@ -30,7 +30,7 @@ set( l, 'interpreter','latex', 'fontsize', 25, 'box', 'off', 'location', 'SouthO
      'horizontal', 'FontWeight', 'bold', 'FontName', 'Helvetica', 'NumColumns', 3 );
 l.ItemTokenSize=[45,45];
 
-title('Fitting of Uniaxial Tensile Test', 'FontSize', 14, 'FontWeight', 'bold', 'Color', 'k');
+title('Fitting of Equi-Biaxial Tensile Test', 'FontSize', 14, 'FontWeight', 'bold', 'Color', 'k');
 hXLabel = xlabel('$\lambda_1$', 'interpreter', 'latex');
 hYLabel = ylabel('$P_1$ (MPa)', 'interpreter', 'latex');
 set( gca, 'Box', 'on', 'TickDir'     , 'out', ...

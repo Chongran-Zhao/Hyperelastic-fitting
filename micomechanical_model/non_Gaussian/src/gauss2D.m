@@ -1,25 +1,42 @@
-function I = gauss2D(f, a, b, c, d, n)
-    % f: 被积函数
-    % a, b: x 的积分区间
-    % c, d: y 的积分区间
-    % n: 高斯点的数量
+function val = gauss2D(f, a, b, c, d, n)
+% GAUSS2D  在矩形域 [a,b] x [c,d] 上使用 n点 Gauss-Legendre 正交近似
+%
+% 用法：
+%   val = gauss2D(f, a, b, c, d, n)
+%
+% 输入：
+%   f: 函数句柄, 接受标量 (x, y)，返回标量 f(x,y)
+%   [a, b]: x 的积分区间
+%   [c, d]: y 的积分区间
+%   n: 每个方向的 Gauss-Legendre 点数 (越大越精确, 对多项式最高可达 2n-1 次完美积分)
+%
+% 输出：
+%   val: 近似的积分值
 
-    % 生成高斯点和权重
-    [points_x, weights_x] = gauss_legendre(n);
-    [points_y, weights_y] = gauss_legendre(n);
-
-    % 映射到实际积分区间
-    points_x = 0.5 * (points_x + 1) * (b - a) + a;
-    points_y = 0.5 * (points_y + 1) * (d - c) + c;
-
-    % 计算加权和
-    I = 0;
+    % 1) 一维 Gauss-Legendre 点和权重：在 [-1,1] 上
+    [xGL, wGL] = gauss_legendre(n);
+    
+    % 映射系数
+    halfX = (b - a)/2;
+    midX  = (b + a)/2;
+    
+    halfY = (d - c)/2;
+    midY  = (d + c)/2;
+    
+    % 2) 两层求和
+    % 先给结果一个初值 0
+    val = 0;
     for i = 1:n
         for j = 1:n
-            x = points_x(i);
-            y = points_y(j);
-            weight = 0.5 * (b - a) * weights_x(i) * 0.5 * (d - c) * weights_y(j);
-            I = I + weight * f(x, y);
+            % 映射到 [a,b] x [c,d]
+            xx = halfX*xGL(i) + midX;
+            yy = halfY*xGL(j) + midY;
+            
+            % 贡献
+            val = val + wGL(i)*wGL(j) * f(xx, yy);
         end
     end
+    
+    % 不要忘记 dxdy 的映射系数
+    val = val * halfX * halfY;
 end

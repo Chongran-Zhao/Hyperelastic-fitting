@@ -10,9 +10,9 @@ F_UT_list(1,1,:) = lambda_UT;
 F_UT_list(2,2,:) = lambda_UT.^(-0.5);
 F_UT_list(3,3,:) = lambda_UT.^(-0.5);
 
-paras0 = [1.0, 25.0];
-lb = [0.0, 0.0];
-ub = [Inf, Inf];
+paras0 = [1.0];
+lb = [0.0];
+ub = [Inf];
 
 objectiveFunction = @(paras) objective(paras, F_UT_list, P1_UT);
 
