@@ -22,7 +22,7 @@ For more detailed discussions on the calibration of different hyperelastic model
 **Chongran Zhao**  
 *Southern University of Science and Technology, China*  
 Email: [chongranzhao@outlook.com](mailto:chongranzhao@outlook.com)  
-Date: Jan. 21, 2024
+Date: Jan. 21, 2025
 
 ---
 
