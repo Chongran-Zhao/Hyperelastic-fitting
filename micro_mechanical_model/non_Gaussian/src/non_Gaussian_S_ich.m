@@ -10,6 +10,7 @@ tilde_lambda_1 = J^(-1.0/3.0) * lambda_1;
 tilde_lambda_2 = J^(-1.0/3.0) * lambda_2;
 tilde_lambda_3 = J^(-1.0/3.0) * lambda_3;
 
+
 lambda_i = @(theta, phi) tilde_lambda_1 * cos(theta).^2 + ...
                          tilde_lambda_2 * sin(theta).^2 .* cos(phi).^2 + ...
                          tilde_lambda_3 * sin(theta).^2 .* sin(phi).^2;
