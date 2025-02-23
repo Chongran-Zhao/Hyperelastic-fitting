@@ -1,0 +1,103 @@
+function single_plot(paras, ...
+    F_list_1, P_exp_1)
+
+P_fit_1 = get_P_ij_list(1, 1, paras, F_list_1);
+
+lambda_1 = zeros(length(P_exp_1), 1);
+
+lambda_1(:) = F_list_1(1,1,:);
+
+
+figure;
+hold on;
+plot(lambda_1, P_exp_1, 'o', 'MarkerFaceColor', '0.00,0.45,0.74', 'MarkerSize', 12); 
+
+plot(lambda_1, P_fit_1, 'Color', '0.00,0.45,0.74', 'LineWidth', 2.5, 'LineStyle', '-');
+hold off;
+
+hXLabel = xlabel('Stretch', 'interpreter', 'latex');
+hYLabel = ylabel('Nominal stress (MPa)', 'interpreter', 'latex');
+set( gca, 'Box', 'on', 'TickDir'     , 'out', ...
+    'TickLength'  , [.02 .02], ...
+    'XMinorTick'  , 'on'      , ...
+    'YMinorTick'  , 'on'  , ...
+    'YGrid'       , 'on' , ...
+    'XGrid'       , 'on' , ...
+    'XColor'      , [0 0 0 ], ...
+    'YColor'      , [0 0 0 ], ...
+    'LineWidth'   , 2 );
+set(gca,'FontSize', 25,'fontWeight','bold');
+set([hXLabel, hYLabel], 'FontName', 'Helvetica', 'FontSize', 30, 'FontWeight', 'bold');
+
+% l = legend( 'UT Experimental', 'ET Experimental', 'PS Experimental', ...
+%             'UT Simulated', 'ET Simulated', 'PS Simulated' );
+% set( l, 'interpreter','latex', 'fontsize', 25, 'box', 'off', 'location', 'SouthOutside', 'Orientation', ...
+%      'horizontal', 'FontWeight', 'bold', 'FontName', 'Helvetica', 'NumColumns', 3 );
+% l.ItemTokenSize=[45,45];
+
+X = 42.0;
+Y = X * 0.9;
+xMargin = 3;
+yMargin = 3;
+xSize = X - 2 * xMargin;
+ySize = Y - 2 * yMargin;
+set(gcf, 'Units','centimeters', 'Position',[5 5 xSize ySize]);
+set(gcf, 'PaperUnits','centimeters');
+set(gcf, 'PaperSize',[X Y]);
+set(gcf, 'PaperPosition',[xMargin yMargin xSize ySize]);
+set(gcf, 'PaperOrientation','portrait');
+
+% x_location = 7.0;
+% y_location = 0.1;
+% delta_y = 0.5;
+% print R^2
+% R_square = (get_R_square(P_exp_1, P_fit_1) + get_R_square(P_exp_2, P_fit_2) + get_R_square(P_exp_3, P_fit_3)) / 3.0;
+% text_R_square = sprintf('$R^2=%.4g \\%%$', 100*R_square);
+% text(x_location, y_location, text_R_square, ...
+%     'HorizontalAlignment', 'center', ...
+%     'VerticalAlignment', 'bottom', ...
+%     'Interpreter', 'latex', ...
+%     'FontSize', 25, 'FontWeight', 'bold', 'Color', 'k', 'FontName', 'Helvetica');
+
+% print NMAD
+NMAD = get_NMAD(P_fit_1, P_exp_1) ;
+text_NMAD = sprintf('$\\mathrm{NMAD}=%.4g \\%%$', NMAD);
+text(max(lambda_1)-0.5, -1.5, text_NMAD, ...
+    'HorizontalAlignment', 'center', ...
+    'VerticalAlignment', 'bottom', ...
+    'Interpreter', 'latex', ...
+    'FontSize', 50, 'FontWeight', 'bold', 'Color', 'k', 'FontName', 'Helvetica');
+
+% print MSD
+% y_location = y_location + delta_y;
+% MSD = get_MSD(P_fit_1, P_exp_1);
+% MSD = MSD + get_MSD(P_fit_2, P_exp_2);
+% MSD = MSD + get_MSD(P_fit_3, P_exp_3);
+% MSD = MSD / 3.0;
+% text_MSD = sprintf('$\\mathrm{MSD} = %.4g$', MSD);
+% text(x_location, y_location, text_MSD, ...
+%     'HorizontalAlignment', 'center', ...
+%     'VerticalAlignment', 'bottom', ...
+%     'Interpreter', 'latex', ...
+%     'FontSize', 25, 'FontWeight', 'bold', 'Color', 'k', 'FontName', 'Helvetica');
+
+% print parameters
+% text_paras = cell(length(paras), 1);
+% x_location = 3.0;
+% y_location = -2.0;
+% delta_x = 2.0;
+% text_paras{1} = sprintf('$\\mu = %.4g$', paras(1));
+% text(x_location, y_location, text_paras{1}, ...
+%     'HorizontalAlignment', 'center', ...
+%     'VerticalAlignment', 'bottom', ...
+%     'Interpreter', 'latex', ...
+%     'FontSize', 25, 'FontWeight', 'bold', 'Color', 'k', 'FontName', 'Helvetica');
+% 
+% x_location = x_location + delta_x;
+% text_paras{2} = sprintf('$N = %.4g$', paras(2));
+% text(x_location, y_location, text_paras{2}, ...
+%     'HorizontalAlignment', 'center', ...
+%     'VerticalAlignment', 'bottom', ...
+%     'Interpreter', 'latex', ...
+%     'FontSize', 25, 'FontWeight', 'bold', 'Color', 'k', 'FontName', 'Helvetica');
+end
