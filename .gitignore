@@ -1,5 +1,32 @@
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# MATLAB editor/autosave files
+*.asv
+*.m~
+*.autosave
+
+# MATLAB/Simulink generated files
+*.mex*
+*.slxc
+slprj/
+codegen/
+simulink_cache.xml
+
+# Generated figures and local outputs
 *.pdf
 *.jpg
+*.jpeg
 *.png
-*.asv
-.DS_Store
+*.fig
+*.eps
+figures/
+output/
+outputs/
+results/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
