@@ -14,10 +14,10 @@ model.set_parameters = @(parameters) Arruda_Boyce(parameters);
 end
 
 function W = Energy(parameters, F)
-kinematics = Kinematics(F, 'F');
+kin = kinematics(F, 'F');
 mu = parameters(1);
 N = parameters(2);
-I1 = sum(kinematics.lambda_bar .^ 2);
+I1 = sum(kin.lambda_bar .^ 2);
 
 if abs(I1 - 3.0) < 1.0e-12
     W = 0.0;
@@ -25,23 +25,23 @@ if abs(I1 - 3.0) < 1.0e-12
 end
 
 integrand = @(x) 0.5 .* sqrt(N ./ (3.0 .* x)) .* mu .* ...
-    Inv_langevin(sqrt(x ./ (3.0 .* N)));
+    inv_langevin(sqrt(x ./ (3.0 .* N)));
 W = integral(integrand, 3.0, I1, 'AbsTol', 1.0e-10, 'RelTol', 1.0e-8);
 end
 
 function out = S(parameters, F)
 C = F' * F;
-kinematics = Kinematics(C, 'C');
+kin = kinematics(C, 'C');
 mu = parameters(1);
 N = parameters(2);
-I1 = sum(kinematics.lambda_bar .^ 2);
+I1 = sum(kin.lambda_bar .^ 2);
 lambda_r = sqrt(I1 ./ (3.0 .* N));
 
-value = sqrt(N ./ (3.0 .* I1)) .* mu .* Inv_langevin(lambda_r);
+value = sqrt(N ./ (3.0 .* I1)) .* mu .* inv_langevin(lambda_r);
 S_bar = value .* eye(3);
-out = kinematics.J^(-2.0 / 3.0) .* Dev(S_bar, C);
+out = kin.J^(-2.0 / 3.0) .* dev(S_bar, C);
 end
 
 function out = P(parameters, F)
-out = Incompressible_constraint(F * S(parameters, F), F);
+out = incompressible_constraint(F * S(parameters, F), F);
 end

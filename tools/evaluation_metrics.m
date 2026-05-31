@@ -1,5 +1,5 @@
-function metrics = Evaluation_metrics(seriesList)
-%EVALUATION_METRICS Average NMAD and R-square over plotted data series.
+function metrics = evaluation_metrics(seriesList)
+%evaluation_metrics Average NMAD and R-square over plotted data series.
 
 metrics = struct();
 metrics.NMAD = NaN;

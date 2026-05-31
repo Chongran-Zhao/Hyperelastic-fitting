@@ -1,5 +1,5 @@
-function textHandle = Add_evaluation_text(axesHandle, metrics)
-%ADD_EVALUATION_TEXT Place NMAD and R-square in the lower-right axes corner.
+function textHandle = add_evaluation_text(axesHandle, metrics)
+%add_evaluation_text Place NMAD and R-square in the lower-right axes corner.
 
 textHandle = [];
 if isempty(metrics) || metrics.num_series == 0

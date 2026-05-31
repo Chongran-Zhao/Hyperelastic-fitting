@@ -18,8 +18,8 @@ function W = Energy(parameters, F)
 C1 = parameters(1);
 C2 = parameters(2);
 
-kinematics = Kinematics(F, 'F');
-lambda = kinematics.lambda_bar;
+kin = kinematics(F, 'F');
+lambda = kin.lambda_bar;
 I1 = sum(lambda .^ 2);
 I2 = lambda(1)^2 * lambda(2)^2 + ...
     lambda(2)^2 * lambda(3)^2 + ...
@@ -33,8 +33,8 @@ C1 = parameters(1);
 C2 = parameters(2);
 
 C = F' * F;
-kinematics = Kinematics(C, 'C');
-lambda = kinematics.lambda_bar;
+kin = kinematics(C, 'C');
+lambda = kin.lambda_bar;
 
 values = zeros(3, 1);
 for ii = 1:3
@@ -42,10 +42,10 @@ for ii = 1:3
     values(ii) = 2.0 .* (C1 + C2 .* sum(lambda(other) .^ 2));
 end
 
-S_bar = Spectral_tensor(values, kinematics.V);
-out = kinematics.J^(-2.0 / 3.0) .* Dev(S_bar, C);
+S_bar = spectral_tensor(values, kin.V);
+out = kin.J^(-2.0 / 3.0) .* dev(S_bar, C);
 end
 
 function out = P(parameters, F)
-out = Incompressible_constraint(F * S(parameters, F), F);
+out = incompressible_constraint(F * S(parameters, F), F);
 end

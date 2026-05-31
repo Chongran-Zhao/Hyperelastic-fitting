@@ -1,4 +1,4 @@
-function out = Hill_Q_proj(lambda, strainValues, strainDerivatives, V)
+function out = hill_Q_proj(lambda, strainValues, strainDerivatives, V)
 out = zeros(3, 3, 3, 3);
 
 d = strainDerivatives ./ lambda;

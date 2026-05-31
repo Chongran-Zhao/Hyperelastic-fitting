@@ -22,27 +22,27 @@ function W = Energy(parameters, F)
 mu = parameters(1);
 
 C = F' * F;
-kinematics = Kinematics(C, 'C');
-strain = Strain_values(parameters, kinematics.lambda_bar);
-E = Spectral_tensor(strain.values, kinematics.V);
-W = mu .* Contract(E, E);
+kin = kinematics(C, 'C');
+strain = Strain_values(parameters, kin.lambda_bar);
+E = spectral_tensor(strain.values, kin.V);
+W = mu .* contract(E, E);
 end
 
 function out = S(parameters, F)
 mu = parameters(1);
 
 C = F' * F;
-kinematics = Kinematics(C, 'C');
-strain = Strain_values(parameters, kinematics.lambda_bar);
-E = Spectral_tensor(strain.values, kinematics.V);
+kin = kinematics(C, 'C');
+strain = Strain_values(parameters, kin.lambda_bar);
+E = spectral_tensor(strain.values, kin.V);
 T = 2.0 .* mu .* E;
-Q = Hill_Q_proj(kinematics.lambda_bar, strain.values, strain.derivatives, kinematics.V);
-S_bar = Contract(T, Q);
-out = kinematics.J^(-2.0 / 3.0) .* Dev(S_bar, C);
+Q = hill_Q_proj(kin.lambda_bar, strain.values, strain.derivatives, kin.V);
+S_bar = contract(T, Q);
+out = kin.J^(-2.0 / 3.0) .* dev(S_bar, C);
 end
 
 function out = P(parameters, F)
-out = Incompressible_constraint(F * S(parameters, F), F);
+out = incompressible_constraint(F * S(parameters, F), F);
 end
 
 function out = Strain_values(parameters, lambda)

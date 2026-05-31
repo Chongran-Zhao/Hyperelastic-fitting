@@ -1,6 +1,6 @@
-function out = Lebedev_quadrature(fun)
+function out = lebedev_quadrature(fun)
 srcDir = fileparts(mfilename('fullpath'));
-rootDir = fileparts(fileparts(srcDir));
+rootDir = fileparts(srcDir);
 data = load(fullfile(rootDir, 'data', 'Lebedev.txt'));
 
 phi = data(:, 1);

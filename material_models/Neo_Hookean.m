@@ -17,8 +17,8 @@ end
 function W = Energy(parameters, F)
 mu = parameters(1);
 
-kinematics = Kinematics(F, 'F');
-I1 = sum(kinematics.lambda_bar .^ 2);
+kin = kinematics(F, 'F');
+I1 = sum(kin.lambda_bar .^ 2);
 W = 0.5 .* mu .* (I1 - 3.0);
 end
 
@@ -26,11 +26,11 @@ function out = S(parameters, F)
 mu = parameters(1);
 
 C = F' * F;
-kinematics = Kinematics(C, 'C');
+kin = kinematics(C, 'C');
 S_bar = mu .* eye(3);
-out = kinematics.J^(-2.0 / 3.0) .* Dev(S_bar, C);
+out = kin.J^(-2.0 / 3.0) .* dev(S_bar, C);
 end
 
 function out = P(parameters, F)
-out = Incompressible_constraint(F * S(parameters, F), F);
+out = incompressible_constraint(F * S(parameters, F), F);
 end

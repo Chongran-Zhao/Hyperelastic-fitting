@@ -81,7 +81,7 @@ models.parameter_map = collect_parameter_map(terms, labels);
 
 models.energy = @(F) total_energy(terms, F);
 models.S = @(F) total_S(terms, F);
-models.P = @(F) Incompressible_constraint(F * total_S(terms, F), F);
+models.P = @(F) incompressible_constraint(F * total_S(terms, F), F);
 models.set_parameters = @(parameters) set_combined_parameters(terms, parameters);
 models.objective = @(parameters, cases) objective(parameters, models, cases);
 end

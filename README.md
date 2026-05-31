@@ -2,21 +2,20 @@
 
 MATLAB code for calibrating incompressible hyperelastic material models from
 experimental deformation data. The project now uses one shared driver and one
-shared source tree instead of separate per-model script folders.
+shared implementation layout instead of separate per-model script folders.
 
 ## Project Layout
 
-- `Driver.m` - main example script for selecting data sets, material models,
+- `driver.m` - main example script for selecting data sets, material models,
   bounds, fitting, and prediction plots.
 - `src/` - shared fitting, data loading, objective, plotting, and model code.
-- `src/material_models/` - built-in constitutive models.
-- `src/tools/` - tensor, kinematics, quadrature, evaluation, and plotting
-  helpers.
+- `material_models/` - built-in constitutive models.
+- `tools/` - tensor, kinematics, quadrature, evaluation, and plotting helpers.
 - `data/` - experimental data and the Lebedev quadrature table used by the
   non-Gaussian chain-network model.
 
 Legacy model-specific folders have been removed. New work should be routed
-through `Driver.m` and the shared `src/` implementation.
+through `driver.m` and the shared implementation folders.
 
 ## Requirements
 
@@ -30,10 +29,10 @@ No external MATLAB packages are required.
 Open MATLAB in the repository root and run:
 
 ```matlab
-Driver
+driver
 ```
 
-Edit `Driver.m` to choose the fitting data, material model, parameter bounds,
+Edit `driver.m` to choose the fitting data, material model, parameter bounds,
 and optional prediction data. A typical workflow is:
 
 ```matlab
@@ -54,7 +53,7 @@ calls available in the current code.
 
 ## Available Models
 
-The built-in model constructors live in `src/material_models/`:
+The built-in model constructors live in `material_models/`:
 
 - `Neo_Hookean`
 - `Mooney_Rivlin`
@@ -91,7 +90,7 @@ To add a new data set, place the files under `data/` and register the case in
 
 ## Extending
 
-To add a material model, create a constructor in `src/material_models/` that
+To add a material model, create a constructor in `material_models/` that
 returns a struct with these fields:
 
 - `name`
@@ -102,7 +101,7 @@ returns a struct with these fields:
 - `P`
 - `set_parameters`
 
-Then add it in `Driver.m` with `Add_material_model`.
+Then add it in `driver.m` with `Add_material_model`.
 
 ## References
 

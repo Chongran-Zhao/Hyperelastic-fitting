@@ -29,8 +29,8 @@ end
 end
 
 function W = Energy(parameters, F)
-kinematics = Kinematics(F, 'F');
-lambda = kinematics.lambda_bar;
+kin = kinematics(F, 'F');
+lambda = kin.lambda_bar;
 numTerms = length(parameters) / 2;
 W = 0.0;
 
@@ -43,8 +43,8 @@ end
 
 function out = S(parameters, F)
 C = F' * F;
-kinematics = Kinematics(C, 'C');
-lambda = kinematics.lambda_bar;
+kin = kinematics(C, 'C');
+lambda = kin.lambda_bar;
 numTerms = length(parameters) / 2;
 dWdLambda = zeros(3, 1);
 
@@ -54,10 +54,10 @@ for ii = 1:numTerms
     dWdLambda = dWdLambda + mu .* lambda .^ (alpha - 1.0);
 end
 
-S_bar = Spectral_tensor(dWdLambda ./ lambda, kinematics.V);
-out = kinematics.J^(-2.0 / 3.0) .* Dev(S_bar, C);
+S_bar = spectral_tensor(dWdLambda ./ lambda, kin.V);
+out = kin.J^(-2.0 / 3.0) .* dev(S_bar, C);
 end
 
 function out = P(parameters, F)
-out = Incompressible_constraint(F * S(parameters, F), F);
+out = incompressible_constraint(F * S(parameters, F), F);
 end

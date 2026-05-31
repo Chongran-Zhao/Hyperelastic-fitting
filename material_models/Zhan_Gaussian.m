@@ -14,23 +14,23 @@ model.set_parameters = @(parameters) Zhan_Gaussian(parameters);
 end
 
 function W = Energy(parameters, F)
-kinematics = Kinematics(F, 'F');
+kin = kinematics(F, 'F');
 mu = parameters(1);
-lambda = kinematics.lambda_bar;
+lambda = kin.lambda_bar;
 W = mu .* (sum(lambda) .^ 2 + 2.0 .* sum(lambda .^ 2));
 end
 
 function out = S(parameters, F)
 C = F' * F;
-kinematics = Kinematics(C, 'C');
+kin = kinematics(C, 'C');
 mu = parameters(1);
-lambda = kinematics.lambda_bar;
+lambda = kin.lambda_bar;
 
 values = 2.0 .* mu .* ((sum(lambda) ./ lambda) + 2.0);
-S_bar = Spectral_tensor(values, kinematics.V);
-out = kinematics.J^(-2.0 / 3.0) .* Dev(S_bar, C);
+S_bar = spectral_tensor(values, kin.V);
+out = kin.J^(-2.0 / 3.0) .* dev(S_bar, C);
 end
 
 function out = P(parameters, F)
-out = Incompressible_constraint(F * S(parameters, F), F);
+out = incompressible_constraint(F * S(parameters, F), F);
 end

@@ -1,7 +1,7 @@
 clc; clear; close all;
 addpath('src/')
-addpath('src/material_models/')
-addpath('src/tools/')
+addpath('material_models/')
+addpath('tools/')
 
 % Fitting data cases.
 fitting_cases = {};

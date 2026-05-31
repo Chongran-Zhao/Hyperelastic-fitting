@@ -1,4 +1,4 @@
-function out = Contract(A, B)
+function out = contract(A, B)
 if length(size(A)) == 4 && length(size(B)) == 2
     out = zeros(3, 3);
     for ii = 1:3
@@ -29,7 +29,7 @@ elseif length(size(A)) == 2 && length(size(B)) == 2
         end
     end
 else
-    error('Contract:UnsupportedContraction', ...
+    error('contract:UnsupportedContraction', ...
         'Unsupported contraction between arrays of size %s and %s.', ...
         mat2str(size(A)), mat2str(size(B)));
 end
