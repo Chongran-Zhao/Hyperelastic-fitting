@@ -61,11 +61,7 @@ The built-in model constructors live in `material_models/`:
 - `Ogden`
 - `Arruda_Boyce`
 - `Guan_Gaussian_GL`
-- `Hill_SH`
-- `Hill_Hencky`
-- `Hill_CR`
-- `Hill_CZ`
-- `Hill_DN`
+- `Hill_GenStrain`
 - `Zhan_Gaussian`
 - `Zhan_NonGaussian`
 
@@ -73,6 +69,7 @@ Models can be combined by calling `Add_material_model` multiple times. Bounds
 are attached to each added model and then assembled into one fitting vector.
 `Guan_Gaussian_GL` supports `SH`, `Hencky`, `CR`, `CZ`, and `DN`
 macroscopic generalized strain options.
+`Hill_GenStrain` supports the same generalized strain options.
 
 ## Data Sets
 

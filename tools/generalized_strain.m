@@ -1,8 +1,10 @@
-function strain = generalized_strain(family, lambda, parameters)
+function strain = generalized_strain(family, lambda, parameters, V)
 % Return principal values and derivatives for a generalized strain family.
 %
 % The scale function E(lambda) is evaluated componentwise on the principal
 % stretch vector lambda. The derivative is dE/dlambda.
+% If the principal direction matrix V is provided, the output also contains
+% Hill's fourth-order projection tensor Q = 2*dE/dC.
 %
 % Supported families:
 %   SH, Seth-Hill: E = (lambda^m - 1)/m, with Hencky limit at m = 0
@@ -13,6 +15,9 @@ function strain = generalized_strain(family, lambda, parameters)
 
 if nargin < 3
     parameters = [];
+end
+if nargin < 4
+    V = [];
 end
 
 lambda = lambda(:);
@@ -95,6 +100,9 @@ switch familyId
 end
 
 strain.parameters = parameters;
+if ~isempty(V)
+    strain.Q = hill_Q_proj(lambda, strain.values, strain.derivatives, V);
+end
 end
 
 function familyId = normalize_family(family)
@@ -113,6 +121,61 @@ switch familyId
         familyId = 'cz';
     case {'darijani_naghdabadi', 'darijaninaghdabadi'}
         familyId = 'dn';
+end
+end
+
+function out = hill_Q_proj(lambda, strainValues, strainDerivatives, V)
+% Hill fourth-order projection tensor Q = 2*dE/dC.
+%
+% E = sum_a E_a * M_a, C = sum_a lambda_a^2 * M_a,
+% M_a = N_a * N_a', and V = [N_1, N_2, N_3].
+out = zeros(3, 3, 3, 3);
+
+d = strainDerivatives ./ lambda;
+theta = zeros(3, 3);
+for ii = 1:3
+    for jj = 1:3
+        samePrincipalValue = abs(lambda(ii) - lambda(jj)) <= ...
+            1.0e-12 .* max([1.0, abs(lambda(ii)), abs(lambda(jj))]);
+        if ii == jj || samePrincipalValue
+            theta(ii, jj) = d(ii);
+        else
+            theta(ii, jj) = 2.0 .* (strainValues(ii) - strainValues(jj)) ./ ...
+                (lambda(ii) .* lambda(ii) - lambda(jj) .* lambda(jj));
+        end
+    end
+end
+
+for ii = 1:3
+    Ni = V(:, ii);
+    out = out + d(ii) .* cross_otimes_1d_to_4d(Ni, Ni, Ni, Ni);
+end
+
+for ii = 1:3
+    for jj = (ii + 1):3
+        Ni = V(:, ii);
+        Nj = V(:, jj);
+        out = out + theta(ii, jj) .* dot_otimes(Ni, Nj) + ...
+            theta(ii, jj) .* dot_otimes(Nj, Ni);
+    end
+end
+end
+
+function out = dot_otimes(Na, Nb)
+out = 0.5 .* cross_otimes_1d_to_4d(Na, Nb, Na, Nb) + ...
+    0.5 .* cross_otimes_1d_to_4d(Na, Nb, Nb, Na);
+end
+
+function out = cross_otimes_1d_to_4d(Na, Nb, Nc, Nd)
+out = zeros(3, 3, 3, 3);
+for ii = 1:3
+    for jj = 1:3
+        for kk = 1:3
+            for ll = 1:3
+                out(ii, jj, kk, ll) = Na(ii) .* Nb(jj) .* Nc(kk) .* Nd(ll);
+            end
+        end
+    end
 end
 end
 

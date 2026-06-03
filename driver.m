@@ -46,11 +46,12 @@ models = [];
 % models = Add_material_model(models, Zhan_Gaussian([1.0]), 0.0, Inf);
 % models = Add_material_model(models, Zhan_NonGaussian([1.0, 100.0]), [0.0, 0.0], [Inf, Inf]);
 
-% models = Add_material_model(models, Hill_SH([0.01, 1.0]), [0.0, -Inf], [Inf, Inf]);
-% models = Add_material_model(models, Hill_Hencky([0.01]), 0.0, Inf);
-% models = Add_material_model(models, Hill_CR([0.01, 1.0, 1.0]), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
-% models = Add_material_model(models, Hill_CZ([0.01, 0.0]), [0.0, -2.0], [Inf, 2.0]);
-% models = Add_material_model(models, Hill_DN([0.01, 1.0, 1.0]), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
+% Hill_GenStrain supports 'SH', 'Hencky', 'CR', 'CZ', and 'DN'.
+% models = Add_material_model(models, Hill_GenStrain([0.01, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
+% models = Add_material_model(models, Hill_GenStrain([0.01], 'Hencky'), 0.0, Inf);
+% models = Add_material_model(models, Hill_GenStrain([0.01, 1.0, 1.0], 'CR'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
+% models = Add_material_model(models, Hill_GenStrain([0.01, 0.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
+% models = Add_material_model(models, Hill_GenStrain([0.01, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
 
 [models, fit] = start_fit(models, fitting_cases);
 
