@@ -1,4 +1,8 @@
 function out = hill_Q_proj(lambda, strainValues, strainDerivatives, V)
+% Hill fourth-order projection tensor Q = 2*dE/dC.
+%
+% E = sum_a E_a * M_a, C = sum_a lambda_a^2 * M_a,
+% M_a = N_a * N_a', and V = [N_1, N_2, N_3].
 out = zeros(3, 3, 3, 3);
 
 d = strainDerivatives ./ lambda;

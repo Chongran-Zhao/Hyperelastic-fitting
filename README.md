@@ -60,6 +60,7 @@ The built-in model constructors live in `material_models/`:
 - `Yeoh`
 - `Ogden`
 - `Arruda_Boyce`
+- `Guan_Gaussian_GL`
 - `Hill_SH`
 - `Hill_Hencky`
 - `Hill_CR`
@@ -70,6 +71,8 @@ The built-in model constructors live in `material_models/`:
 
 Models can be combined by calling `Add_material_model` multiple times. Bounds
 are attached to each added model and then assembled into one fitting vector.
+`Guan_Gaussian_GL` supports `SH`, `Hencky`, `CR`, `CZ`, and `DN`
+macroscopic generalized strain options.
 
 ## Data Sets
 
@@ -118,6 +121,9 @@ Then add it in `driver.m` with `Add_material_model`.
 - Liu, J., Guan, J., Zhao, C., & Luo, J. (2024). *A Continuum and Computational
   Framework for Viscoelastodynamics: III. A Nonlinear Theory.* **Computer
   Methods in Applied Mechanics and Engineering**, 430, 117248.
+- Guan, J., Li, X., Yuan, H., & Liu, J. (2025). *Hyperelastic modeling based on
+  generalized Landau invariants and multi-stage calibration.* **Journal of the
+  Mechanics and Physics of Solids**, 106338.
 - Zhan, L., Wang, S., Qu, S., Steinmann, P., & Xiao, R. (2023). *A new
   micro-macro transition for hyperelastic materials.* **Journal of the
   Mechanics and Physics of Solids**, 171, 105156.
