@@ -1,17 +1,14 @@
-function model = Guan_Gaussian_SH(parameters, strainFamily)
-% Guan Gaussian-chain micro-macro model with Seth-Hill chain strain.
+function model = Guan_Gaussian_CZ(parameters, strainFamily)
+% Guan Gaussian-chain micro-macro model with Curnier-Zysset chain strain.
 %
-% The chain scale function E_hat is the Seth-Hill strain:
-%   E_hat(lambda_n) = (lambda_n^m_hat - 1)/m_hat.
+% The chain scale function E_hat is the Curnier-Zysset strain:
+%   E_hat(lambda_n) = (lambda_n^m_hat - lambda_n^(-m_hat))/(2*m_hat).
 % The chain-scale parameter m_hat is nonzero.
 %
-% The macroscopic generalized strain E_bar is selectable. For
-% Gaussian-chain statistics, the sphere average is evaluated by Lebedev
-% quadrature:
+% The macroscopic generalized strain E_bar is selectable. With
+% xi = E_bar:(n*n'), Gaussian-chain statistics give:
 %   Psi = 3/2*mu*<lambda_n^2 - 1>,
-%   lambda_n^2 = ((1 + m_hat*E_bar:(n*n'))^2)^(1/m_hat).
-% This expression is used on the physical branch
-%   1 + m_hat*E_bar:(n*n') > 0.
+%   lambda_n^2 = exp(2/m_hat*asinh(m_hat*xi)).
 % The reference constant is chosen so that Psi = 0 at F = I.
 %
 % The isochoric second Piola-Kirchhoff stress follows from
@@ -36,7 +33,7 @@ end
 
 parameters = parameters(:).';
 if length(parameters) < 2
-    error('Guan_Gaussian_SH:InvalidParameters', ...
+    error('Guan_Gaussian_CZ:InvalidParameters', ...
         'The parameters must be [mu, m_hat, strain parameters...].');
 end
 
@@ -45,24 +42,24 @@ mHat = parameters(2);
 strainParameters = parameters(3:end);
 strainInfo = generalized_strain(strainFamily, ones(3, 1), strainParameters);
 
-model.name = sprintf('Guan-Gaussian-%s_SH', strainInfo.family);
+model.name = sprintf('Guan-Gaussian-%s_CZ', strainInfo.family);
 model.parameters = parameters;
 model.strain_family = strainInfo.family;
 model.strain_family_label = strainInfo.family_label;
-model.chain_strain_family = 'Seth-Hill';
+model.chain_strain_family = 'Curnier-Zysset';
 model.chain_strain_parameter = mHat;
 model.parameter_names = [{'mu', 'm_hat'}, ...
     prefix_strain_parameter_names(strainInfo.parameter_names)];
 model.energy = @(F) Energy(parameters, strainFamily, F);
 model.S = @(F) S(parameters, strainFamily, F);
 model.P = @(F) P(parameters, strainFamily, F);
-model.set_parameters = @(parameters) Guan_Gaussian_SH(parameters, strainFamily);
+model.set_parameters = @(parameters) Guan_Gaussian_CZ(parameters, strainFamily);
 
 if mu < 0.0
-    error('Guan_Gaussian_SH:InvalidParameter', 'mu must be non-negative.');
+    error('Guan_Gaussian_CZ:InvalidParameter', 'mu must be non-negative.');
 end
 if abs(mHat) < 1.0e-12
-    error('Guan_Gaussian_SH:InvalidParameter', 'm_hat must be nonzero.');
+    error('Guan_Gaussian_CZ:InvalidParameter', 'm_hat must be nonzero.');
 end
 end
 
@@ -99,23 +96,13 @@ out = kin.J^(-2.0 / 3.0) .* dev(S_bar, C);
 end
 
 function value = lambda_n_squared(xi, mHat)
-base = 1.0 + mHat .* xi;
-if base <= 0.0
-    value = NaN;
-    return;
-end
-
-value = (base .^ 2.0) .^ (1.0 ./ mHat);
+value = exp(2.0 ./ mHat .* asinh(mHat .* xi));
 end
 
 function value = d_lambda_n_squared_d_xi(xi, mHat)
-base = 1.0 + mHat .* xi;
-if base <= 0.0
-    value = NaN;
-    return;
-end
-
-value = 2.0 .* lambda_n_squared(xi, mHat) ./ base;
+argument = mHat .* xi;
+value = 2.0 .* lambda_n_squared(xi, mHat) ./ ...
+    sqrt(1.0 + argument .^ 2.0);
 end
 
 function M = direction_tensor(theta, phi)
