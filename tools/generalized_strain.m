@@ -9,6 +9,7 @@ function strain = generalized_strain(family, lambda, parameters, V)
 % Supported families:
 %   SH, Seth-Hill: E = (lambda^m - 1)/m, with Hencky limit at m = 0
 %   Hencky:        E = log(lambda)
+%   Biot:          E = lambda - 1
 %   CR:            E = (lambda^m - lambda^(-n))/(m + n)
 %   CZ:            E = (2+m)/8*lambda^2 - (2-m)/8*lambda^(-2) - m/4
 %   DN:            E = (exp(m*(lambda-1)) - exp(n*(1/lambda-1)))/(m+n)
@@ -45,6 +46,14 @@ switch familyId
         strain.derivatives = 1.0 ./ lambda;
         strain.family = 'Hencky';
         strain.family_label = 'Hencky';
+        strain.parameter_names = {};
+
+    case 'biot'
+        require_parameter_count(parameters, 0, 'Biot');
+        strain.values = lambda - 1.0;
+        strain.derivatives = ones(size(lambda));
+        strain.family = 'Biot';
+        strain.family_label = 'Biot';
         strain.parameter_names = {};
 
     case 'cr'

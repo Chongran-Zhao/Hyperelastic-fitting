@@ -2,7 +2,7 @@ function model = Hill_GenStrain(parameters, strainFamily)
 % Hill generalized strain model.
 %
 % Supported generalized strains:
-%   SH, Hencky, CR, CZ, DN.
+%   SH, Hencky, Biot, CR, CZ, DN.
 %
 % W = mu * E:E, with E = sum_a E(lambda_bar_a) * M_a.
 %

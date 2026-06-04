@@ -6,9 +6,9 @@ addpath('tools/')
 % Fitting data cases.
 fitting_cases = {};
 
-fitting_cases = add_exp_data_sets(fitting_cases, 'Treloar', 'UT');
-fitting_cases = add_exp_data_sets(fitting_cases, 'Treloar', 'ET');
-fitting_cases = add_exp_data_sets(fitting_cases, 'Treloar', 'PS');
+% fitting_cases = add_exp_data_sets(fitting_cases, 'Treloar', 'UT');
+% fitting_cases = add_exp_data_sets(fitting_cases, 'Treloar', 'ET');
+% fitting_cases = add_exp_data_sets(fitting_cases, 'Treloar', 'PS');
 
 % fitting_cases = add_exp_data_sets(fitting_cases, 'Kawabata', 'UT');
 % fitting_cases = add_exp_data_sets(fitting_cases, 'Kawabata', 'ET');
@@ -22,7 +22,7 @@ fitting_cases = add_exp_data_sets(fitting_cases, 'Treloar', 'PS');
 % fitting_cases = add_exp_data_sets(fitting_cases, 'Kawamura', 'UE');
 % fitting_cases = add_exp_data_sets(fitting_cases, 'Kawamura', 'ET');
 
-% fitting_cases = add_exp_data_sets(fitting_cases, 'Jones', 'UT');
+fitting_cases = add_exp_data_sets(fitting_cases, 'Jones', 'UT');
 
 % fitting_cases = add_exp_data_sets(fitting_cases, 'James', 'UT');
 
@@ -36,22 +36,32 @@ models = [];
 % models = add_material_model(models, Ogden([0.1, 1.3]), [0.0, -Inf], [Inf, Inf]);
 % models = add_material_model(models, Arruda_Boyce([0.1, 20.0]), [0.0, 0.0], [Inf, Inf]);
 
-% Guan_Gaussian_GL supports 'SH', 'Hencky', 'CR', 'CZ', and 'DN'.
+% Guan_Gaussian_GL supports 'SH', 'Hencky', 'Biot', 'CR', 'CZ', and 'DN'.
 % models = add_material_model(models, Guan_Gaussian_GL([0.1, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
 % models = add_material_model(models, Guan_Gaussian_GL([0.1], 'Hencky'), 0.0, Inf);
+% models = add_material_model(models, Guan_Gaussian_GL([0.1], 'Biot'), 0.0, Inf);
 % models = add_material_model(models, Guan_Gaussian_GL([0.1, 1.0, 1.0], 'CR'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
 % models = add_material_model(models, Guan_Gaussian_GL([0.1, 1.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
 % models = add_material_model(models, Guan_Gaussian_GL([0.1, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
 
-% models = add_material_model(models, Zhan_Gaussian([1.0]), 0.0, Inf);
+% Guan_Gaussian_Biot supports 'SH', 'Hencky', 'Biot', 'CR', 'CZ', and 'DN'.
+% models = add_material_model(models, Guan_Gaussian_Biot([0.1, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
+% models = add_material_model(models, Guan_Gaussian_Biot([0.1], 'Hencky'), 0.0, Inf);
+% models = add_material_model(models, Guan_Gaussian_Biot([0.1], 'Biot'), 0.0, Inf);
+% models = add_material_model(models, Guan_Gaussian_Biot([0.1, 1.0, 1.0], 'CR'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
+% models = add_material_model(models, Guan_Gaussian_Biot([0.1, 1.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
+% models = add_material_model(models, Guan_Gaussian_Biot([0.1, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
+
+models = add_material_model(models, Zhan_Gaussian([1.0]), 0.0, Inf);
 % models = add_material_model(models, Zhan_NonGaussian([1.0, 100.0]), [0.0, 0.0], [Inf, Inf]);
 
-% Hill_GenStrain supports 'SH', 'Hencky', 'CR', 'CZ', and 'DN'.
+% Hill_GenStrain supports 'SH', 'Hencky', 'Biot', 'CR', 'CZ', and 'DN'.
 % models = add_material_model(models, Hill_GenStrain([0.01, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
 % models = add_material_model(models, Hill_GenStrain([0.01], 'Hencky'), 0.0, Inf);
+% models = add_material_model(models, Hill_GenStrain([0.01], 'Biot'), 0.0, Inf);
 % models = add_material_model(models, Hill_GenStrain([0.01, 1.0, 1.0], 'CR'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
 % models = add_material_model(models, Hill_GenStrain([0.01, 0.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
-models = add_material_model(models, Hill_GenStrain([0.01, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
+% models = add_material_model(models, Hill_GenStrain([0.01, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
 
 [models, fit] = start_fit(models, fitting_cases);
 
@@ -68,11 +78,11 @@ prediction_cases = {};
 % prediction_cases = add_exp_data_sets(prediction_cases, 'Kawamura', 'BT', 1.3);
 % prediction_cases = add_exp_data_sets(prediction_cases, 'Kawamura', 'BT', 1.1);
 
-% prediction_cases = add_exp_data_sets(prediction_cases, 'Jones', 'BT', 1.0);
-% prediction_cases = add_exp_data_sets(prediction_cases, 'Jones', 'BT', 1.502);
-% prediction_cases = add_exp_data_sets(prediction_cases, 'Jones', 'BT', 1.984);
-% prediction_cases = add_exp_data_sets(prediction_cases, 'Jones', 'BT', 2.295);
-% prediction_cases = add_exp_data_sets(prediction_cases, 'Jones', 'BT', 2.623);
+prediction_cases = add_exp_data_sets(prediction_cases, 'Jones', 'BT', 1.0);
+prediction_cases = add_exp_data_sets(prediction_cases, 'Jones', 'BT', 1.502);
+prediction_cases = add_exp_data_sets(prediction_cases, 'Jones', 'BT', 1.984);
+prediction_cases = add_exp_data_sets(prediction_cases, 'Jones', 'BT', 2.295);
+prediction_cases = add_exp_data_sets(prediction_cases, 'Jones', 'BT', 2.623);
 
 % prediction_cases = add_exp_data_sets(prediction_cases, 'James', 'BT', 1.3);
 % prediction_cases = add_exp_data_sets(prediction_cases, 'James', 'BT', 1.5);
