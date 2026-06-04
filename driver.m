@@ -60,6 +60,16 @@ models = [];
 % models = add_material_model(models, Guan_Gaussian_Hencky([0.1, 1.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
 % models = add_material_model(models, Guan_Gaussian_Hencky([0.1, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
 
+% Guan_Gaussian_SH supports 'SH', 'Hencky', 'Biot', 'CR', 'CZ', and 'DN'.
+% Its parameters are [mu, m_hat, strain parameters...], where m_hat belongs
+% to the chain-scale Seth-Hill strain E_hat.
+% models = add_material_model(models, Guan_Gaussian_SH([0.1, 1.0, 1.0], 'SH'), [0.0, -Inf, -Inf], [Inf, Inf, Inf]);
+% models = add_material_model(models, Guan_Gaussian_SH([0.1, 0.0], 'Hencky'), [0.0, -Inf], [Inf, Inf]);
+% models = add_material_model(models, Guan_Gaussian_SH([0.1, 1.0], 'Biot'), [0.0, -Inf], [Inf, Inf]);
+% models = add_material_model(models, Guan_Gaussian_SH([0.1, 1.0, 1.0, 1.0], 'CR'), [0.0, -Inf, 0.0, 0.0], [Inf, Inf, Inf, Inf]);
+% models = add_material_model(models, Guan_Gaussian_SH([0.1, 1.0, 1.0], 'CZ'), [0.0, -Inf, -2.0], [Inf, Inf, 2.0]);
+models = add_material_model(models, Guan_Gaussian_SH([0.1, 1.0, 1.0, 1.0], 'DN'), [0.0, -Inf, 0.0, 0.0], [Inf, Inf, Inf, Inf]);
+
 % Guan_Gaussian_SH2_3 supports 'SH', 'Hencky', 'Biot', 'CR', 'CZ', and 'DN'.
 % models = add_material_model(models, Guan_Gaussian_SH2_3([0.1, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
 % models = add_material_model(models, Guan_Gaussian_SH2_3([0.1], 'Hencky'), 0.0, Inf);
@@ -87,6 +97,7 @@ plot_simultaneous_fit(models, fitting_cases);
 prediction_cases = {};
 
 % BT data are used for prediction/validation, not simultaneous fitting.
+
 % prediction_cases = add_exp_data_sets(prediction_cases, 'Kawamura', 'UE');
 % prediction_cases = add_exp_data_sets(prediction_cases, 'Kawamura', 'ET');
 % prediction_cases = add_exp_data_sets(prediction_cases, 'Kawamura', 'BT', 1.7);

@@ -250,6 +250,7 @@ end
 function [experimentHandle, predictionHandle] = plot_prediction_series(axesHandle, ...
     series, color, marker)
 [lambdaSorted, fitSorted] = sort_curve(series.lambda, series.fit);
+warn_nonfinite_prediction(series, lambdaSorted, fitSorted);
 
 experimentHandle = plot(axesHandle, series.lambda, series.exp, marker, ...
     'LineStyle', 'none', ...
@@ -263,6 +264,31 @@ predictionHandle = plot(axesHandle, lambdaSorted, fitSorted, '-', ...
     'Color', color, ...
     'LineWidth', 2.0, ...
     'DisplayName', sprintf('%s prediction', series.label));
+end
+
+function warn_nonfinite_prediction(series, lambdaSorted, fitSorted)
+validMask = isfinite(lambdaSorted) & isfinite(fitSorted);
+if all(validMask)
+    return;
+end
+
+lambdaRange = finite_range(lambdaSorted);
+validLambdaRange = finite_range(lambdaSorted(validMask));
+warning('plot_prediction:NonfinitePrediction', ...
+    ['Prediction for "%s" has %d nonfinite value(s). ', ...
+    'Experimental lambda_1 range is [%g, %g]; finite prediction ', ...
+    'lambda_1 range is [%g, %g].'], ...
+    series.label, sum(~validMask), lambdaRange(1), lambdaRange(2), ...
+    validLambdaRange(1), validLambdaRange(2));
+end
+
+function range = finite_range(values)
+values = values(isfinite(values));
+if isempty(values)
+    range = [NaN, NaN];
+else
+    range = [min(values), max(values)];
+end
 end
 
 function values = fitted_PK1_component(models, caseData, row, col)

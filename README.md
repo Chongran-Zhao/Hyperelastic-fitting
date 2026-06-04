@@ -83,6 +83,7 @@ Guan Gaussian-chain micro-macro models:
 | `Guan_Gaussian_Biot` | Biot, `lambda_n - 1` | `[mu, strain parameters...]` |
 | `Guan_Gaussian_SH2_3` | Seth-Hill `m = 2/3`, `3/2*(lambda_n^(2/3) - 1)` | `[mu, strain parameters...]` |
 | `Guan_Gaussian_Hencky` | Hencky, `log(lambda_n)` | `[mu, strain parameters...]` |
+| `Guan_Gaussian_SH` | Seth-Hill, `(lambda_n^m_hat - 1)/m_hat` | `[mu, m_hat, strain parameters...]` |
 
 For the Guan models, the constructor suffix specifies the chain-scale strain
 `E_hat`. The second constructor argument selects the macroscopic generalized
@@ -94,6 +95,11 @@ models = add_material_model(models, ...
     [0.0, -Inf], [Inf, Inf]);
 ```
 
+For `Guan_Gaussian_SH`, `m_hat` is the chain-scale Seth-Hill parameter in
+`E_hat`. Any generalized-strain parameters for `E_bar` follow after `m_hat`;
+when `E_bar` also uses the Seth-Hill family, the parameter vector is
+`[mu, m_hat, strain_m]`.
+
 Generalized-strain model:
 
 | Constructor | Parameters | Notes |
@@ -102,7 +108,7 @@ Generalized-strain model:
 
 The available macroscopic generalized strain families are shared by
 `Guan_Gaussian_GL`, `Guan_Gaussian_Biot`, `Guan_Gaussian_SH2_3`,
-`Guan_Gaussian_Hencky`, and `Hill_GenStrain`:
+`Guan_Gaussian_Hencky`, `Guan_Gaussian_SH`, and `Hill_GenStrain`:
 
 | Family | Constructor argument | Extra parameters |
 | --- | --- | --- |
