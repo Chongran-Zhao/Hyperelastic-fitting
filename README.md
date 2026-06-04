@@ -62,6 +62,7 @@ The built-in model constructors live in `material_models/`:
 - `Arruda_Boyce`
 - `Guan_Gaussian_Biot`
 - `Guan_Gaussian_GL`
+- `Guan_Gaussian_SH2_3`
 - `Hill_GenStrain`
 - `Zhan_Gaussian`
 - `Zhan_NonGaussian`
@@ -71,6 +72,7 @@ are attached to each added model and then assembled into one fitting vector.
 `Guan_Gaussian_GL` supports `SH`, `Hencky`, `Biot`, `CR`, `CZ`, and `DN`
 macroscopic generalized strain options.
 `Guan_Gaussian_Biot` supports the same generalized strain options.
+`Guan_Gaussian_SH2_3` supports the same generalized strain options.
 `Hill_GenStrain` supports the same generalized strain options.
 
 ## Data Sets
