@@ -37,10 +37,10 @@ and optional prediction data. A typical workflow is:
 
 ```matlab
 fitting_cases = {};
-fitting_cases = Add_exp_data_sets(fitting_cases, 'James', 'UT');
+fitting_cases = add_exp_data_sets(fitting_cases, 'James', 'UT');
 
 models = [];
-models = Add_material_model(models, ...
+models = add_material_model(models, ...
     Zhan_NonGaussian([1.0, 100.0]), ...
     [0.0, 0.0], [Inf, Inf]);
 
@@ -48,7 +48,7 @@ models = Add_material_model(models, ...
 plot_simultaneous_fit(models, fitting_cases);
 ```
 
-Call `Add_exp_data_sets()` with no inputs to print the registered data-set
+Call `add_exp_data_sets()` with no inputs to print the registered data-set
 calls available in the current code.
 
 ## Available Models
@@ -65,7 +65,7 @@ The built-in model constructors live in `material_models/`:
 - `Zhan_Gaussian`
 - `Zhan_NonGaussian`
 
-Models can be combined by calling `Add_material_model` multiple times. Bounds
+Models can be combined by calling `add_material_model` multiple times. Bounds
 are attached to each added model and then assembled into one fitting vector.
 `Guan_Gaussian_GL` supports `SH`, `Hencky`, `CR`, `CZ`, and `DN`
 macroscopic generalized strain options.
@@ -86,7 +86,7 @@ tension (UT), equibiaxial tension (ET), pure shear (PS), uniaxial extension
 - Katashima et al. (2012)
 
 To add a new data set, place the files under `data/` and register the case in
-`src/Add_exp_data_sets.m`.
+`src/add_exp_data_sets.m`.
 
 ## Extending
 
@@ -101,7 +101,7 @@ returns a struct with these fields:
 - `P`
 - `set_parameters`
 
-Then add it in `driver.m` with `Add_material_model`.
+Then add it in `driver.m` with `add_material_model`.
 
 ## References
 

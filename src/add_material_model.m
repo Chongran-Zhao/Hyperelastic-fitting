@@ -1,11 +1,11 @@
-function models = Add_material_model(models, model, lowerBounds, upperBounds)
+function models = add_material_model(models, model, lowerBounds, upperBounds)
 % Add one material model to a combined material model.
 %
 % Example:
 %   models = [];
-%   models = Add_material_model(models, Yeoh([0.2, 0.01, 0.001]), ...
+%   models = add_material_model(models, Yeoh([0.2, 0.01, 0.001]), ...
 %       [0.0, -Inf, -Inf], [Inf, Inf, Inf]);
-%   models = Add_material_model(models, Neo_Hookean([0.1]), 0.0, Inf);
+%   models = add_material_model(models, Neo_Hookean([0.1]), 0.0, Inf);
 
 if nargin < 1 || isempty(models)
     terms = {};
@@ -14,7 +14,7 @@ else
 end
 
 if nargin < 2
-    error('Add_material_model:MissingModel', 'A material model must be provided.');
+    error('add_material_model:MissingModel', 'A material model must be provided.');
 end
 
 check_material_model(model);
@@ -30,7 +30,7 @@ lowerBounds = expand_bounds(lowerBounds, model.parameters, 'lowerBounds');
 upperBounds = expand_bounds(upperBounds, model.parameters, 'upperBounds');
 
 if any(lowerBounds > upperBounds)
-    error('Add_material_model:InvalidBounds', ...
+    error('add_material_model:InvalidBounds', ...
         'Each lower bound must be smaller than or equal to the upper bound.');
 end
 
@@ -46,13 +46,13 @@ requiredFields = {'name', 'parameters', 'parameter_names', 'energy', 'S', 'P', '
 for ii = 1:length(requiredFields)
     fieldName = requiredFields{ii};
     if ~isfield(model, fieldName)
-        error('Add_material_model:InvalidModel', ...
+        error('add_material_model:InvalidModel', ...
             'Material model is missing field "%s".', fieldName);
     end
 end
 
 if length(model.parameter_names) ~= length(model.parameters)
-    error('Add_material_model:InvalidModel', ...
+    error('add_material_model:InvalidModel', ...
         'parameter_names must have the same length as parameters.');
 end
 end
@@ -62,7 +62,7 @@ bounds = bounds(:).';
 if isscalar(bounds)
     bounds = repmat(bounds, size(parameters));
 elseif length(bounds) ~= length(parameters)
-    error('Add_material_model:InvalidBounds', ...
+    error('add_material_model:InvalidBounds', ...
         '%s must be scalar or have length %d.', name, length(parameters));
 end
 end
@@ -164,7 +164,7 @@ for ii = 1:length(terms)
 end
 
 if length(parameters) ~= expectedLength
-    error('Add_material_model:InvalidParameterLength', ...
+    error('add_material_model:InvalidParameterLength', ...
         'Expected %d parameters, got %d.', expectedLength, length(parameters));
 end
 
