@@ -52,6 +52,14 @@ models = [];
 % models = add_material_model(models, Guan_Gaussian_Biot([0.1, 1.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
 % models = add_material_model(models, Guan_Gaussian_Biot([0.1, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
 
+% Guan_Gaussian_Hencky supports 'SH', 'Hencky', 'Biot', 'CR', 'CZ', and 'DN'.
+% models = add_material_model(models, Guan_Gaussian_Hencky([0.1, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
+% models = add_material_model(models, Guan_Gaussian_Hencky([0.1], 'Hencky'), 0.0, Inf);
+% models = add_material_model(models, Guan_Gaussian_Hencky([0.1], 'Biot'), 0.0, Inf);
+% models = add_material_model(models, Guan_Gaussian_Hencky([0.1, 1.0, 1.0], 'CR'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
+% models = add_material_model(models, Guan_Gaussian_Hencky([0.1, 1.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
+% models = add_material_model(models, Guan_Gaussian_Hencky([0.1, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
+
 % Guan_Gaussian_SH2_3 supports 'SH', 'Hencky', 'Biot', 'CR', 'CZ', and 'DN'.
 % models = add_material_model(models, Guan_Gaussian_SH2_3([0.1, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
 % models = add_material_model(models, Guan_Gaussian_SH2_3([0.1], 'Hencky'), 0.0, Inf);

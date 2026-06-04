@@ -53,27 +53,68 @@ calls available in the current code.
 
 ## Available Models
 
-The built-in model constructors live in `material_models/`:
+The built-in model constructors live in `material_models/`. All model
+constructors return a struct with energy, second Piola-Kirchhoff stress, first
+Piola-Kirchhoff stress, parameter names, and a `set_parameters` callback used
+by the fitting code.
 
-- `Neo_Hookean`
-- `Mooney_Rivlin`
-- `Yeoh`
-- `Ogden`
-- `Arruda_Boyce`
-- `Guan_Gaussian_Biot`
-- `Guan_Gaussian_GL`
-- `Guan_Gaussian_SH2_3`
-- `Hill_GenStrain`
-- `Zhan_Gaussian`
-- `Zhan_NonGaussian`
+Classical incompressible hyperelastic models:
+
+| Constructor | Parameters | Notes |
+| --- | --- | --- |
+| `Neo_Hookean` | `[mu]` | Isochoric first-invariant model. |
+| `Mooney_Rivlin` | `[C1, C2]` | Isochoric first- and second-invariant model. |
+| `Yeoh` | `[C1, C2, C3]` | Cubic polynomial in `I1_bar - 3`. |
+| `Ogden` | `[mu1, alpha1, mu2, alpha2, ...]` | Any number of `[mu, alpha]` pairs. |
+| `Arruda_Boyce` | `[mu, N]` | Eight-chain model using the inverse Langevin approximation. |
+
+Zhan micro-macro transition models:
+
+| Constructor | Parameters | Notes |
+| --- | --- | --- |
+| `Zhan_Gaussian` | `[mu]` | Closed-form Gaussian chain-network model based on the principal stretches of `U_bar`. |
+| `Zhan_NonGaussian` | `[mu, N]` | Non-Gaussian chain-network model evaluated by Lebedev sphere quadrature. |
+
+Guan Gaussian-chain micro-macro models:
+
+| Constructor | Chain strain `E_hat` | Parameters |
+| --- | --- | --- |
+| `Guan_Gaussian_GL` | Green-Lagrange, `1/2*(lambda_n^2 - 1)` | `[mu, strain parameters...]` |
+| `Guan_Gaussian_Biot` | Biot, `lambda_n - 1` | `[mu, strain parameters...]` |
+| `Guan_Gaussian_SH2_3` | Seth-Hill `m = 2/3`, `3/2*(lambda_n^(2/3) - 1)` | `[mu, strain parameters...]` |
+| `Guan_Gaussian_Hencky` | Hencky, `log(lambda_n)` | `[mu, strain parameters...]` |
+
+For the Guan models, the constructor suffix specifies the chain-scale strain
+`E_hat`. The second constructor argument selects the macroscopic generalized
+strain `E_bar`, for example:
+
+```matlab
+models = add_material_model(models, ...
+    Guan_Gaussian_Hencky([0.1, 1.0], 'SH'), ...
+    [0.0, -Inf], [Inf, Inf]);
+```
+
+Generalized-strain model:
+
+| Constructor | Parameters | Notes |
+| --- | --- | --- |
+| `Hill_GenStrain` | `[mu, strain parameters...]` | Hill-type model with `W = mu * E:E`. |
+
+The available macroscopic generalized strain families are shared by
+`Guan_Gaussian_GL`, `Guan_Gaussian_Biot`, `Guan_Gaussian_SH2_3`,
+`Guan_Gaussian_Hencky`, and `Hill_GenStrain`:
+
+| Family | Constructor argument | Extra parameters |
+| --- | --- | --- |
+| Seth-Hill | `'SH'` | `[m]` |
+| Hencky | `'Hencky'` | `[]` |
+| Biot | `'Biot'` | `[]` |
+| Curnier-Rakotomanana | `'CR'` | `[m, n]` |
+| Curnier-Zysset | `'CZ'` | `[m]` |
+| Darijani-Naghdabadi | `'DN'` | `[m, n]` |
 
 Models can be combined by calling `add_material_model` multiple times. Bounds
 are attached to each added model and then assembled into one fitting vector.
-`Guan_Gaussian_GL` supports `SH`, `Hencky`, `Biot`, `CR`, `CZ`, and `DN`
-macroscopic generalized strain options.
-`Guan_Gaussian_Biot` supports the same generalized strain options.
-`Guan_Gaussian_SH2_3` supports the same generalized strain options.
-`Hill_GenStrain` supports the same generalized strain options.
 
 ## Data Sets
 
