@@ -16,7 +16,7 @@ function model = Guan_Gaussian_Hencky(parameters, strainFamily)
 % where Q_bar = 2*dE_bar/dC_bar is Hill's fourth-order projection tensor.
 %
 % Supported macroscopic generalized strains:
-%   SH, Hencky, Biot, CR, CZ, DN.
+%   SH, Hencky, Biot, BI, CR, CZ, DN.
 %
 % Reference:
 %   Guan, J., Li, X., Yuan, H., & Liu, J. (2025).
