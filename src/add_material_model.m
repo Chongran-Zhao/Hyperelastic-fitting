@@ -20,10 +20,18 @@ end
 check_material_model(model);
 
 if nargin < 3 || isempty(lowerBounds)
-    lowerBounds = -Inf(size(model.parameters));
+    if isfield(model, 'lower_bounds')
+        lowerBounds = model.lower_bounds;
+    else
+        lowerBounds = -Inf(size(model.parameters));
+    end
 end
 if nargin < 4 || isempty(upperBounds)
-    upperBounds = Inf(size(model.parameters));
+    if isfield(model, 'upper_bounds')
+        upperBounds = model.upper_bounds;
+    else
+        upperBounds = Inf(size(model.parameters));
+    end
 end
 
 lowerBounds = expand_bounds(lowerBounds, model.parameters, 'lowerBounds');
