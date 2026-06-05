@@ -1,8 +1,9 @@
 function strain = generalized_strain(family, lambda, parameters, V)
-% Return principal values and derivatives for a generalized strain family.
+% Return principal values, derivatives, and inverse for a strain family.
 %
 % The scale function E(lambda) is evaluated componentwise on the principal
 % stretch vector lambda. The derivative is dE/dlambda.
+% The inverse handle strain.inverse(xi) returns lambda = E^{-1}(xi).
 % If the principal direction matrix V is provided, the output also contains
 % Hill's fourth-order projection tensor Q = 2*dE/dC.
 %
@@ -10,6 +11,7 @@ function strain = generalized_strain(family, lambda, parameters, V)
 %   SH, Seth-Hill: E = (lambda^m - 1)/m, with Hencky limit at m = 0
 %   Hencky:        E = log(lambda)
 %   Biot:          E = lambda - 1
+%   BI:            E = (lambda^m - lambda^(-m))/(2*m)
 %   CR:            E = (lambda^m - lambda^(-n))/(m + n)
 %   CZ:            E = (2+m)/8*lambda^2 - (2-m)/8*lambda^(-2) - m/4
 %   DN:            E = (exp(m*(lambda-1)) - exp(n*(1/lambda-1)))/(m+n)
@@ -39,6 +41,7 @@ switch familyId
         strain.family = 'SH';
         strain.family_label = 'Seth-Hill';
         strain.parameter_names = {'m'};
+        strain.inverse = @(xi) inverse_seth_hill(xi, m);
 
     case 'hencky'
         require_parameter_count(parameters, 0, 'Hencky');
@@ -47,6 +50,7 @@ switch familyId
         strain.family = 'Hencky';
         strain.family_label = 'Hencky';
         strain.parameter_names = {};
+        strain.inverse = @(xi) exp(xi);
 
     case 'biot'
         require_parameter_count(parameters, 0, 'Biot');
@@ -55,6 +59,23 @@ switch familyId
         strain.family = 'Biot';
         strain.family_label = 'Biot';
         strain.parameter_names = {};
+        strain.inverse = @(xi) 1.0 + xi;
+
+    case 'bi'
+        require_parameter_count(parameters, 1, 'Bazant-Itskov');
+        m = parameters(1);
+        if abs(m) < 1.0e-12
+            strain.values = log(lambda);
+            strain.derivatives = 1.0 ./ lambda;
+        else
+            strain.values = (lambda .^ m - lambda .^ (-m)) ./ (2.0 .* m);
+            strain.derivatives = 0.5 .* ...
+                (lambda .^ (m - 1.0) + lambda .^ (-m - 1.0));
+        end
+        strain.family = 'BI';
+        strain.family_label = 'Bazant-Itskov';
+        strain.parameter_names = {'m'};
+        strain.inverse = @(xi) inverse_bazant_itskov(xi, m);
 
     case 'cr'
         require_parameter_count(parameters, 2, 'Curnier-Rakotomanana');
@@ -70,6 +91,7 @@ switch familyId
         strain.family = 'CR';
         strain.family_label = 'Curnier-Rakotomanana';
         strain.parameter_names = {'m', 'n'};
+        strain.inverse = @(xi) inverse_curnier_rakotomanana(xi, m, n);
 
     case 'cz'
         require_parameter_count(parameters, 1, 'Curnier-Zysset');
@@ -85,6 +107,7 @@ switch familyId
         strain.family = 'CZ';
         strain.family_label = 'Curnier-Zysset';
         strain.parameter_names = {'m'};
+        strain.inverse = @(xi) inverse_curnier_zysset(xi, m);
 
     case 'dn'
         require_parameter_count(parameters, 2, 'Darijani-Naghdabadi');
@@ -102,6 +125,7 @@ switch familyId
         strain.family = 'DN';
         strain.family_label = 'Darijani-Naghdabadi';
         strain.parameter_names = {'m', 'n'};
+        strain.inverse = @(xi) inverse_darijani_naghdabadi(xi, m, n);
 
     otherwise
         error('generalized_strain:UnsupportedFamily', ...
@@ -124,6 +148,8 @@ switch familyId
         familyId = 'sh';
     case {'he', 'log', 'logarithmic'}
         familyId = 'hencky';
+    case {'bazant_itskov', 'bazantitskov'}
+        familyId = 'bi';
     case {'curnier_rakotomanana', 'curnierrakotomanana'}
         familyId = 'cr';
     case {'curnier_zysset', 'curnierzysset'}
@@ -131,6 +157,90 @@ switch familyId
     case {'darijani_naghdabadi', 'darijaninaghdabadi'}
         familyId = 'dn';
 end
+end
+
+function lambda = inverse_seth_hill(xi, m)
+if abs(m) < 1.0e-12
+    lambda = exp(xi);
+else
+    lambda = (1.0 + m .* xi) .^ (1.0 ./ m);
+end
+end
+
+function lambda = inverse_bazant_itskov(xi, m)
+if abs(m) < 1.0e-12
+    lambda = exp(xi);
+else
+    lambda = exp(asinh(m .* xi) ./ m);
+end
+end
+
+function lambda = inverse_curnier_rakotomanana(xi, m, n)
+strainFunction = @(lambda) (lambda .^ m - lambda .^ (-n)) ./ (m + n);
+lambda = inverse_monotone_strain(xi, strainFunction);
+end
+
+function lambda = inverse_curnier_zysset(xi, m)
+if abs(m + 2.0) < 1.0e-12
+    lambda = (1.0 - 2.0 .* xi) .^ (-0.5);
+elseif abs(m - 2.0) < 1.0e-12
+    lambda = sqrt(1.0 + 2.0 .* xi);
+else
+    numerator = 2.0 .* m + 8.0 .* xi + ...
+        sqrt((2.0 .* m + 8.0 .* xi) .^ 2.0 + ...
+        4.0 .* (2.0 + m) .* (2.0 - m));
+    denominator = 2.0 .* (2.0 + m);
+    lambda = sqrt(numerator ./ denominator);
+end
+end
+
+function lambda = inverse_darijani_naghdabadi(xi, m, n)
+strainFunction = @(lambda) (exp(m .* (lambda - 1.0)) - ...
+    exp(n .* (lambda .^ (-1.0) - 1.0))) ./ (m + n);
+lambda = inverse_monotone_strain(xi, strainFunction);
+end
+
+function lambda = inverse_monotone_strain(xi, strainFunction)
+lambda = arrayfun(@(target) inverse_monotone_scalar(target, strainFunction), xi);
+end
+
+function lambda = inverse_monotone_scalar(target, strainFunction)
+if ~isfinite(target)
+    lambda = NaN;
+    return;
+end
+
+if target == 0.0
+    lambda = 1.0;
+    return;
+end
+
+if target > 0.0
+    lower = 1.0;
+    upper = 2.0;
+    while strainFunction(upper) < target
+        upper = 2.0 .* upper;
+    end
+else
+    lower = 0.5;
+    upper = 1.0;
+    while strainFunction(lower) > target
+        lower = 0.5 .* lower;
+    end
+end
+
+for iteration = 1:100
+    midpoint = exp(0.5 .* (log(lower) + log(upper)));
+    value = strainFunction(midpoint);
+
+    if value < target
+        lower = midpoint;
+    else
+        upper = midpoint;
+    end
+end
+
+lambda = exp(0.5 .* (log(lower) + log(upper)));
 end
 
 function out = hill_Q_proj(lambda, strainValues, strainDerivatives, V)
