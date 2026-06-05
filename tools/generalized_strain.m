@@ -1,20 +1,60 @@
 function strain = generalized_strain(family, lambda, parameters, V)
-% Return principal values, derivatives, and inverse for a strain family.
+%   Principal generalized strain values and Hill projection.
 %
-% The scale function E(lambda) is evaluated componentwise on the principal
-% stretch vector lambda. The derivative is dE/dlambda.
-% The inverse handle strain.inverse(xi) returns lambda = E^{-1}(xi).
-% If the principal direction matrix V is provided, the output also contains
-% Hill's fourth-order projection tensor Q = 2*dE/dC.
+%   strain = GENERALIZED_STRAIN(family, lambda, parameters) evaluates a
+%   scalar generalized strain measure E(lambda) componentwise on the
+%   principal stretch vector lambda.
 %
-% Supported families:
-%   SH, Seth-Hill: E = (lambda^m - 1)/m, with Hencky limit at m = 0
-%   Hencky:        E = log(lambda)
-%   Biot:          E = lambda - 1
-%   BI:            E = (lambda^m - lambda^(-m))/(2*m)
-%   CR:            E = (lambda^m - lambda^(-n))/(m + n)
-%   CZ:            E = (2+m)/8*lambda^2 - (2-m)/8*lambda^(-2) - m/4
-%   DN:            E = (exp(m*(lambda-1)) - exp(n*(1/lambda-1)))/(m+n)
+%   The input lambda must contain positive principal stretches. The output
+%   structure contains
+%
+%       strain.values       = E(lambda)
+%       strain.derivatives  = dE/dlambda
+%       strain.inverse      = function handle for lambda = E^{-1}(xi)
+%       strain.family       = normalized family identifier
+%       strain.family_label = display name of the strain family
+%       strain.parameter_names = names of strain parameters
+%       strain.parameters   = strain parameters
+%
+%   The inverse handle strain.inverse(xi) acts componentwise on xi. For
+%   strain families with an explicit inverse, the closed-form expression is
+%   used. For Curnier-Rakotomanana and Darijani-Naghdabadi strains, the
+%   inverse is obtained by solving the monotone scalar equation E(lambda)=xi
+%   using a logarithmic bisection procedure.
+%
+%   strain = GENERALIZED_STRAIN(family, lambda, parameters, V) additionally
+%   returns Hill's fourth-order projection tensor
+%
+%       strain.Q = 2*dE/dC,
+%
+%   where V = [N_1, N_2, N_3] is the principal direction matrix. This tensor
+%   maps a stress-like quantity conjugate to E to the second
+%   Piola-Kirchhoff stress contribution.
+%
+%   Supported families:
+%
+%       SH, Seth-Hill:
+%           E = (lambda^m - 1)/m, with Hencky limit as m -> 0.
+%
+%       Hencky:
+%           E = log(lambda).
+%
+%       Biot:
+%           E = lambda - 1.
+%
+%       BI, Bazant-Itskov:
+%           E = (lambda^m - lambda^(-m))/(2*m), with Hencky limit as m -> 0.
+%
+%       CR, Curnier-Rakotomanana:
+%           E = (lambda^m - lambda^(-n))/(m+n), with m*n > 0.
+%
+%       CZ, Curnier-Zysset:
+%           E = (2+m)/8*lambda^2 - (2-m)/8*lambda^(-2) - m/4,
+%           with -2 <= m <= 2.
+%
+%       DN, Darijani-Naghdabadi:
+%           E = (exp(m*(lambda-1)) - exp(n*(1/lambda-1)))/(m+n),
+%           with m > 0 and n > 0.
 
 if nargin < 3
     parameters = [];
@@ -27,10 +67,16 @@ lambda = lambda(:);
 parameters = parameters(:).';
 familyId = normalize_family(family);
 
+if any(lambda <= 0.0) || any(~isfinite(lambda))
+    error('generalized_strain:InvalidStretch', ...
+        'All principal stretches must be positive and finite.');
+end
+
 switch familyId
     case 'sh'
         require_parameter_count(parameters, 1, 'Seth-Hill');
         m = parameters(1);
+
         if abs(m) < 1.0e-12
             strain.values = log(lambda);
             strain.derivatives = 1.0 ./ lambda;
@@ -38,6 +84,7 @@ switch familyId
             strain.values = (lambda .^ m - 1.0) ./ m;
             strain.derivatives = lambda .^ (m - 1.0);
         end
+
         strain.family = 'SH';
         strain.family_label = 'Seth-Hill';
         strain.parameter_names = {'m'};
@@ -45,6 +92,7 @@ switch familyId
 
     case 'hencky'
         require_parameter_count(parameters, 0, 'Hencky');
+
         strain.values = log(lambda);
         strain.derivatives = 1.0 ./ lambda;
         strain.family = 'Hencky';
@@ -54,6 +102,7 @@ switch familyId
 
     case 'biot'
         require_parameter_count(parameters, 0, 'Biot');
+
         strain.values = lambda - 1.0;
         strain.derivatives = ones(size(lambda));
         strain.family = 'Biot';
@@ -64,6 +113,7 @@ switch familyId
     case 'bi'
         require_parameter_count(parameters, 1, 'Bazant-Itskov');
         m = parameters(1);
+
         if abs(m) < 1.0e-12
             strain.values = log(lambda);
             strain.derivatives = 1.0 ./ lambda;
@@ -72,6 +122,7 @@ switch familyId
             strain.derivatives = 0.5 .* ...
                 (lambda .^ (m - 1.0) + lambda .^ (-m - 1.0));
         end
+
         strain.family = 'BI';
         strain.family_label = 'Bazant-Itskov';
         strain.parameter_names = {'m'};
@@ -81,10 +132,12 @@ switch familyId
         require_parameter_count(parameters, 2, 'Curnier-Rakotomanana');
         m = parameters(1);
         n = parameters(2);
+
         if m .* n <= 0.0
             error('generalized_strain:InvalidParameter', ...
                 'Curnier-Rakotomanana strain requires m*n > 0.');
         end
+
         strain.values = (lambda .^ m - lambda .^ (-n)) ./ (m + n);
         strain.derivatives = m ./ (m + n) .* lambda .^ (m - 1.0) + ...
             n ./ (m + n) .* lambda .^ (-n - 1.0);
@@ -96,10 +149,12 @@ switch familyId
     case 'cz'
         require_parameter_count(parameters, 1, 'Curnier-Zysset');
         m = parameters(1);
+
         if m < -2.0 || m > 2.0
             error('generalized_strain:InvalidParameter', ...
                 'Curnier-Zysset strain requires -2 <= m <= 2.');
         end
+
         strain.values = (2.0 + m) ./ 8.0 .* lambda .^ 2.0 - ...
             (2.0 - m) ./ 8.0 .* lambda .^ (-2.0) - m ./ 4.0;
         strain.derivatives = (2.0 + m) ./ 4.0 .* lambda + ...
@@ -113,10 +168,12 @@ switch familyId
         require_parameter_count(parameters, 2, 'Darijani-Naghdabadi');
         m = parameters(1);
         n = parameters(2);
+
         if m <= 0.0 || n <= 0.0
             error('generalized_strain:InvalidParameter', ...
                 'Darijani-Naghdabadi strain requires m > 0 and n > 0.');
         end
+
         strain.values = (exp(m .* (lambda - 1.0)) - ...
             exp(n .* (lambda .^ (-1.0) - 1.0))) ./ (m + n);
         strain.derivatives = (m .* exp(m .* (lambda - 1.0)) + ...
@@ -133,6 +190,7 @@ switch familyId
 end
 
 strain.parameters = parameters;
+
 if ~isempty(V)
     strain.Q = hill_Q_proj(lambda, strain.values, strain.derivatives, V);
 end
@@ -201,16 +259,23 @@ lambda = inverse_monotone_strain(xi, strainFunction);
 end
 
 function lambda = inverse_monotone_strain(xi, strainFunction)
+%INVERSE_MONOTONE_STRAIN Componentwise inverse of a monotone strain function.
 lambda = arrayfun(@(target) inverse_monotone_scalar(target, strainFunction), xi);
 end
 
 function lambda = inverse_monotone_scalar(target, strainFunction)
+%INVERSE_MONOTONE_SCALAR Solve E(lambda)=target for lambda>0.
+%
+%   The strain function is assumed to be monotone increasing and to satisfy
+%   E(1)=0. The root is bracketed on either side of lambda=1 and then solved
+%   by bisection in log(lambda), which preserves positivity of lambda.
+
 if ~isfinite(target)
     lambda = NaN;
     return;
 end
 
-if target == 0.0
+if abs(target) <= 1.0e-14
     lambda = 1.0;
     return;
 end
@@ -218,14 +283,30 @@ end
 if target > 0.0
     lower = 1.0;
     upper = 2.0;
+    expandCount = 0;
+
     while strainFunction(upper) < target
         upper = 2.0 .* upper;
+        expandCount = expandCount + 1;
+
+        if expandCount > 100
+            error('generalized_strain:InverseFailed', ...
+                'Failed to bracket inverse strain for positive target.');
+        end
     end
 else
     lower = 0.5;
     upper = 1.0;
+    expandCount = 0;
+
     while strainFunction(lower) > target
         lower = 0.5 .* lower;
+        expandCount = expandCount + 1;
+
+        if expandCount > 100
+            error('generalized_strain:InverseFailed', ...
+                'Failed to bracket inverse strain for negative target.');
+        end
     end
 end
 
@@ -244,18 +325,28 @@ lambda = exp(0.5 .* (log(lower) + log(upper)));
 end
 
 function out = hill_Q_proj(lambda, strainValues, strainDerivatives, V)
-% Hill fourth-order projection tensor Q = 2*dE/dC.
+%HILL_Q_PROJ Hill fourth-order projection tensor Q = 2*dE/dC.
 %
-% E = sum_a E_a * M_a, C = sum_a lambda_a^2 * M_a,
-% M_a = N_a * N_a', and V = [N_1, N_2, N_3].
+%   For an isotropic generalized strain tensor
+%
+%       E = sum_a E_a(lambda_a) M_a,
+%       C = sum_a lambda_a^2 M_a,
+%       M_a = N_a*N_a',
+%
+%   this function constructs Q = 2*dE/dC in spectral form. The diagonal
+%   coefficients are dE_a/dlambda_a divided by lambda_a, and the
+%   off-diagonal coefficients are the standard divided differences.
+
 out = zeros(3, 3, 3, 3);
 
 d = strainDerivatives ./ lambda;
 theta = zeros(3, 3);
+
 for ii = 1:3
     for jj = 1:3
         samePrincipalValue = abs(lambda(ii) - lambda(jj)) <= ...
             1.0e-12 .* max([1.0, abs(lambda(ii)), abs(lambda(jj))]);
+
         if ii == jj || samePrincipalValue
             theta(ii, jj) = d(ii);
         else
@@ -287,6 +378,7 @@ end
 
 function out = cross_otimes_1d_to_4d(Na, Nb, Nc, Nd)
 out = zeros(3, 3, 3, 3);
+
 for ii = 1:3
     for jj = 1:3
         for kk = 1:3

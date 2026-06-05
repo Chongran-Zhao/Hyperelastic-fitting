@@ -99,12 +99,12 @@ models = [];
 % models = add_material_model(models, Guan_Gaussian_SH2_3([0.1, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
 
 % models = add_material_model(models, Zhan_Gaussian([1.0]), 0.0, Inf);
-% models = add_material_model(models, Zhan_NonGaussian([1.0, 100.0]), [0.0, 0.0], [Inf, Inf]);
+models = add_material_model(models, Zhan_NonGaussian([1.0, 100.0]), [0.0, 0.0], [Inf, Inf]);
 
 % Zhao_NonGaussian supports independently selectable chain E_hat and
 % macroscopic E_bar families: 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and
 % 'DN'. Default parameters and bounds are set by Zhao_NonGaussian.
-models = add_material_model(models, Zhao_NonGaussian('Hencky', 'Hencky'));
+% models = add_material_model(models, Zhao_NonGaussian('Hencky', 'Hencky'));
 % models = add_material_model(models, Zhao_NonGaussian('BI', 'Biot'));
 % models = add_material_model(models, Zhao_NonGaussian('CR', 'DN'));
 

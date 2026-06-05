@@ -1,33 +1,49 @@
 function out = contract(A, B)
-if length(size(A)) == 4 && length(size(B)) == 2
+%CONTRACT Double contraction between second- and fourth-order tensors.
+%
+%   This function implements the standard double contraction operation.
+%
+%   If A and B are both second-order tensors, then
+%
+%       out = A:B = A_ij B_ij.
+%
+%   If A is fourth-order and B is second-order, then
+%
+%       out_ij = A_ijkl B_kl.
+%
+%   If A is second-order and B is fourth-order, then
+%
+%       out_kl = A_ij B_ijkl.
+%
+%   These definitions follow the tensor contraction convention used in
+%   Holzapfel (2000), Nonlinear Solid Mechanics, e.g. Eqs. (1.93) and
+%   (1.151).
+
+if ismatrix(A) && ismatrix(B)
+    validateattributes(A, {'numeric'}, {'size', [3, 3]}, mfilename, 'A');
+    validateattributes(B, {'numeric'}, {'size', [3, 3]}, mfilename, 'B');
+    out = sum(A .* B, 'all');
+
+elseif ndims(A) == 4 && ismatrix(B)
+    validateattributes(A, {'numeric'}, {'size', [3, 3, 3, 3]}, mfilename, 'A');
+    validateattributes(B, {'numeric'}, {'size', [3, 3]}, mfilename, 'B');
     out = zeros(3, 3);
     for ii = 1:3
         for jj = 1:3
-            for kk = 1:3
-                for ll = 1:3
-                    out(ii, jj) = out(ii, jj) + A(ii, jj, kk, ll) .* B(kk, ll);
-                end
-            end
+            out(ii, jj) = sum(squeeze(A(ii, jj, :, :)) .* B, 'all');
         end
     end
-elseif length(size(B)) == 4 && length(size(A)) == 2
+
+elseif ismatrix(A) && ndims(B) == 4
+    validateattributes(A, {'numeric'}, {'size', [3, 3]}, mfilename, 'A');
+    validateattributes(B, {'numeric'}, {'size', [3, 3, 3, 3]}, mfilename, 'B');
     out = zeros(3, 3);
-    for ii = 1:3
-        for jj = 1:3
-            for kk = 1:3
-                for ll = 1:3
-                    out(kk, ll) = out(kk, ll) + A(ii, jj) .* B(ii, jj, kk, ll);
-                end
-            end
+    for kk = 1:3
+        for ll = 1:3
+            out(kk, ll) = sum(A .* squeeze(B(:, :, kk, ll)), 'all');
         end
     end
-elseif length(size(A)) == 2 && length(size(B)) == 2
-    out = 0.0;
-    for ii = 1:3
-        for jj = 1:3
-            out = out + A(ii, jj) .* B(ii, jj);
-        end
-    end
+
 else
     error('contract:UnsupportedContraction', ...
         'Unsupported contraction between arrays of size %s and %s.', ...

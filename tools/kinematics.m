@@ -1,33 +1,51 @@
 function out = kinematics(input, inputType)
-% Continuum kinematics for isotropic hyperelastic models.
+%   Continuum kinematics for isotropic hyperelastic models.
 %
-% Polar decomposition:
-%   F = R * U
+%   out = KINEMATICS(input, inputType) computes the basic kinematic
+%   quantities used in isotropic hyperelastic constitutive models. The input
+%   can be either the deformation gradient F or the right Cauchy-Green tensor
+%   C, specified by inputType = 'F' or inputType = 'C'.
 %
-% Right Cauchy-Green tensor:
-%   C = F' * F = U^2
+%   Polar decomposition:
 %
-% Spectral decomposition:
-%   lambda = [lambda_1, lambda_2, lambda_3]' is the principal stretch
-%   vector of U.
-%   V = [N_1, N_2, N_3] is the eigenvector matrix from eig(C).
-%   M_a = N_a * N_a'
-%   C = V * diag(lambda_a^2) * V'
-%   C = sum_a lambda_a^2 * M_a
-%   U = sum_a lambda_a * M_a
+%       F = R * U.
 %
-% Isochoric split:
-%   J = det(F) = prod(lambda_a)
-%   U_bar = J^(-1/3) * U
-%   C_bar = J^(-2/3) * C
+%   Right Cauchy-Green tensor:
 %
-% Output convention:
-%   U and U_bar are second-order tensors.
-%   lambda = [lambda_1, lambda_2, lambda_3]' is the principal stretch
-%   vector of U.
-%   lambda_bar = [lambda_bar_1, lambda_bar_2, lambda_bar_3]' is the
-%   principal stretch vector of U_bar.
-%   V stores the principal directions N_a and is not the left stretch tensor.
+%       C = F' * F = U^2.
+%
+%   Spectral decomposition:
+%
+%       C = sum_a lambda_a^2 * M_a,
+%       U = sum_a lambda_a   * M_a,
+%       M_a = N_a * N_a'.
+%
+%   Here lambda = [lambda_1, lambda_2, lambda_3]' is the principal stretch
+%   vector, and V = [N_1, N_2, N_3] stores the corresponding principal
+%   directions returned by eig(C). The ordering of the principal directions
+%   follows MATLAB's eig output.
+%
+%   Isochoric split:
+%
+%       J = det(F) = sqrt(det(C)) = prod(lambda_a),
+%       U_bar = J^(-1/3) * U,
+%       C_bar = J^(-2/3) * C,
+%       lambda_bar_a = J^(-1/3) * lambda_a.
+%
+%   Output fields:
+%
+%       out.C          right Cauchy-Green tensor
+%       out.V          principal direction matrix [N_1, N_2, N_3]
+%       out.U          right stretch tensor
+%       out.U_bar      isochoric right stretch tensor
+%       out.C_bar      isochoric right Cauchy-Green tensor
+%       out.J          volume ratio
+%       out.lambda     principal stretches of U
+%       out.lambda_bar isochoric principal stretches of U_bar
+%
+%   Note that V denotes the eigenvector matrix of C and is not the left
+%   stretch tensor.
+
 if nargin < 2
     inputType = 'F';
 end
