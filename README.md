@@ -74,6 +74,14 @@ Zhan micro-macro transition models:
 | --- | --- | --- |
 | `Zhan_Gaussian` | `[mu]` | Closed-form Gaussian chain-network model based on the principal stretches of `U_bar`. |
 | `Zhan_NonGaussian` | `[mu, N]` | Non-Gaussian chain-network model evaluated by Lebedev sphere quadrature. |
+| `Zhao_NonGaussian` | `[mu, N, chain parameters..., strain parameters...]` | General non-Gaussian chain-network model with selectable chain strain `E_hat` and macroscopic generalized strain `E_bar`. |
+
+For `Zhao_NonGaussian`, the constructor is
+`Zhao_NonGaussian(chainFamily, strainFamily)` for default parameters and
+bounds, or `Zhao_NonGaussian(parameters, chainFamily, strainFamily)` for
+explicit parameters. The chain-strain parameters come before the
+macroscopic-strain parameters; for example,
+`Zhao_NonGaussian([mu, N, m_hat, m, n], 'BI', 'CR')`.
 
 Guan Gaussian-chain micro-macro models:
 
@@ -112,13 +120,14 @@ Generalized-strain model:
 The available macroscopic generalized strain families are shared by
 `Guan_Gaussian_GL`, `Guan_Gaussian_Biot`, `Guan_Gaussian_SH2_3`,
 `Guan_Gaussian_Hencky`, `Guan_Gaussian_SH`, `Guan_Gaussian_CR`,
-`Guan_Gaussian_CZ`, and `Hill_GenStrain`:
+`Guan_Gaussian_CZ`, `Zhao_NonGaussian`, and `Hill_GenStrain`:
 
 | Family | Constructor argument | Extra parameters |
 | --- | --- | --- |
 | Seth-Hill | `'SH'` | `[m]` |
 | Hencky | `'Hencky'` | `[]` |
 | Biot | `'Biot'` | `[]` |
+| Bazant-Itskov | `'BI'` | `[m]` |
 | Curnier-Rakotomanana | `'CR'` | `[m, n]` |
 | Curnier-Zysset | `'CZ'` | `[m]` |
 | Darijani-Naghdabadi | `'DN'` | `[m, n]` |
