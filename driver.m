@@ -47,15 +47,9 @@ models = add_material_model(models, Zhan_NonGaussian([1.0, 100.0]), [0.0, 0.0], 
 % models = add_material_model(models, Micro_GenStrain('NonGaussian', 'BI', 'Biot'));
 % models = add_material_model(models, Micro_GenStrain('NonGaussian', 'CR', 'DN'));
 
-% Hill_GenStrain supports 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and 'DN'.
-% Default parameters and bounds are set by Hill_GenStrain.
+% Hill_GenStrain sets default parameters and bounds from the strain family.
 % models = add_material_model(models, Hill_GenStrain('SH'));
-% models = add_material_model(models, Hill_GenStrain('Hencky'));
-% models = add_material_model(models, Hill_GenStrain('Biot'));
-% models = add_material_model(models, Hill_GenStrain('BI'));
-% models = add_material_model(models, Hill_GenStrain('CR'));
-% models = add_material_model(models, Hill_GenStrain('CZ'));
-% models = add_material_model(models, Hill_GenStrain('DN'));
+% models = add_material_model(models, Hill_GenStrain([0.01, 1.0], 'SH'));
 
 [models, fit] = start_fit(models, fitting_cases);
 
