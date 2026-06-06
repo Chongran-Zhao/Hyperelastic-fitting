@@ -68,48 +68,22 @@ Classical incompressible hyperelastic models:
 | `Ogden` | `[mu1, alpha1, mu2, alpha2, ...]` | Any number of `[mu, alpha]` pairs. |
 | `Arruda_Boyce` | `[mu, N]` | Eight-chain model using the inverse Langevin approximation. |
 
-Zhan micro-macro transition models:
+Chain-network micro-macro transition models:
 
 | Constructor | Parameters | Notes |
 | --- | --- | --- |
 | `Zhan_Gaussian` | `[mu]` | Closed-form Gaussian chain-network model based on the principal stretches of `U_bar`. |
 | `Zhan_NonGaussian` | `[mu, N]` | Non-Gaussian chain-network model evaluated by Lebedev sphere quadrature. |
-| `Zhao_NonGaussian` | `[mu, N, chain parameters..., strain parameters...]` | General non-Gaussian chain-network model with selectable chain strain `E_hat` and macroscopic generalized strain `E_bar`. |
+| `Micro_GenStrain` | Gaussian: `[mu, chain parameters..., strain parameters...]`; Non-Gaussian: `[mu, N, chain parameters..., strain parameters...]` | General chain-network model with selectable chain statistics, chain strain `E_hat`, and macroscopic generalized strain `E_bar`. |
 
-For `Zhao_NonGaussian`, the constructor is
-`Zhao_NonGaussian(chainFamily, strainFamily)` for default parameters and
-bounds, or `Zhao_NonGaussian(parameters, chainFamily, strainFamily)` for
-explicit parameters. The chain-strain parameters come before the
+For `Micro_GenStrain`, the constructor is
+`Micro_GenStrain(statisticsFamily, chainFamily, strainFamily)` for default
+parameters and bounds, or
+`Micro_GenStrain(parameters, statisticsFamily, chainFamily, strainFamily)`
+for explicit parameters. `statisticsFamily` is `'Gaussian'` or
+`'NonGaussian'`. The chain-strain parameters come before the
 macroscopic-strain parameters; for example,
-`Zhao_NonGaussian([mu, N, m_hat, m, n], 'BI', 'CR')`.
-
-Guan Gaussian-chain micro-macro models:
-
-| Constructor | Chain strain `E_hat` | Parameters |
-| --- | --- | --- |
-| `Guan_Gaussian_GL` | Green-Lagrange, `1/2*(lambda_n^2 - 1)` | `[mu, strain parameters...]` |
-| `Guan_Gaussian_Biot` | Biot, `lambda_n - 1` | `[mu, strain parameters...]` |
-| `Guan_Gaussian_SH2_3` | Seth-Hill `m = 2/3`, `3/2*(lambda_n^(2/3) - 1)` | `[mu, strain parameters...]` |
-| `Guan_Gaussian_Hencky` | Hencky, `log(lambda_n)` | `[mu, strain parameters...]` |
-| `Guan_Gaussian_SH` | Seth-Hill, `(lambda_n^m_hat - 1)/m_hat` | `[mu, m_hat, strain parameters...]` |
-| `Guan_Gaussian_CR` | Curnier-Rakotomanana, `(lambda_n^m_hat - lambda_n^(-n_hat))/(m_hat+n_hat)` | `[mu, m_hat, n_hat, strain parameters...]` |
-| `Guan_Gaussian_CZ` | Curnier-Zysset, `(lambda_n^m_hat - lambda_n^(-m_hat))/(2*m_hat)` | `[mu, m_hat, strain parameters...]` |
-
-For the Guan models, the constructor suffix specifies the chain-scale strain
-`E_hat`. The second constructor argument selects the macroscopic generalized
-strain `E_bar`, for example:
-
-```matlab
-models = add_material_model(models, ...
-    Guan_Gaussian_Hencky([0.1, 1.0], 'SH'), ...
-    [0.0, -Inf], [Inf, Inf]);
-```
-
-For `Guan_Gaussian_SH`, `Guan_Gaussian_CR`, and `Guan_Gaussian_CZ`, the hatted
-parameters belong to the chain-scale strain `E_hat`. Any generalized-strain
-parameters for `E_bar` follow after the hatted parameters; for example,
-`Guan_Gaussian_CR` with Seth-Hill `E_bar` uses
-`[mu, m_hat, n_hat, strain_m]`.
+`Micro_GenStrain([mu, N, m_hat, m, n], 'NonGaussian', 'BI', 'CR')`.
 
 Generalized-strain model:
 
@@ -117,10 +91,12 @@ Generalized-strain model:
 | --- | --- | --- |
 | `Hill_GenStrain` | `[mu, strain parameters...]` | Hill-type model with `W = mu * E:E`. |
 
-The available macroscopic generalized strain families are shared by
-`Guan_Gaussian_GL`, `Guan_Gaussian_Biot`, `Guan_Gaussian_SH2_3`,
-`Guan_Gaussian_Hencky`, `Guan_Gaussian_SH`, `Guan_Gaussian_CR`,
-`Guan_Gaussian_CZ`, `Zhao_NonGaussian`, and `Hill_GenStrain`:
+For `Hill_GenStrain`, the constructor is `Hill_GenStrain(strainFamily)` for
+default parameters and bounds, or `Hill_GenStrain(parameters, strainFamily)`
+for explicit parameters. The default modulus is `mu = 0.01`.
+
+The available generalized strain families are shared by `Micro_GenStrain`
+and `Hill_GenStrain`:
 
 | Family | Constructor argument | Extra parameters |
 | --- | --- | --- |
