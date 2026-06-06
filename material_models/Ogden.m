@@ -1,7 +1,22 @@
 function model = Ogden(parameters)
 % Incompressible Ogden model with any number of terms.
-% W = sum_a mu_a/alpha_a*(sum(lambda_bar.^alpha_a) - 3).
-% The number of terms is determined by the number of [mu, alpha] pairs.
+%
+% The model is written directly in terms of the isochoric principal
+% stretches lambda_bar. For each term a,
+%
+%   W_a = mu_a/alpha_a * (sum_i lambda_bar_i^alpha_a - 3),
+%
+% and the total energy is W = sum_a W_a. This normalization gives
+% W(F = I) = 0. The number of terms is determined by the number of
+% [mu, alpha] parameter pairs.
+%
+% Reference:
+%   Ogden, R. W. (1972).
+%   Large deformation isotropic elasticity-on the correlation of theory
+%   and experiment for incompressible rubberlike solids.
+%   Proceedings of the Royal Society of London. A. Mathematical and
+%   Physical Sciences, 326(1567), 565-584.
+%
 % parameters = [mu1, alpha1, mu2, alpha2, ...]
 parameters = parameters(:).';
 

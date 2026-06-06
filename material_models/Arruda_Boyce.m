@@ -1,6 +1,24 @@
 function model = Arruda_Boyce(parameters)
-% Arruda-Boyce eight-chain model with an inverse Langevin approximation.
-% I1_bar = sum(lambda_bar.^2), and W is integrated from I1_bar = 3.
+% Arruda-Boyce eight-chain model.
+%
+% This model uses the isochoric first invariant
+%
+%   I1_bar = tr(C_bar) = sum(lambda_bar.^2),
+%
+% and the eight-chain relative chain stretch
+%
+%   lambda_r = sqrt(I1_bar/(3*N)).
+%
+% The inverse Langevin function is evaluated by the local approximation in
+% inv_langevin.m. The strain energy is obtained by integrating dW/dI1_bar
+% from the undeformed reference value I1_bar = 3, so W(F = I) = 0.
+%
+% Reference:
+%   Arruda, E. M., & Boyce, M. C. (1993).
+%   A three-dimensional constitutive model for the large stretch behavior
+%   of rubber elastic materials.
+%   Journal of the Mechanics and Physics of Solids, 41(2), 389-412.
+%
 % parameters = [mu, N]
 parameters = parameters(:).';
 

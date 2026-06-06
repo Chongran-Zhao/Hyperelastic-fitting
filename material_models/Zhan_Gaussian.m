@@ -1,6 +1,18 @@
 function model = Zhan_Gaussian(parameters)
 % Zhan Gaussian chain-network model.
-% W = mu*((tr(U_bar))^2 + 2*tr(U_bar^2) - 15).
+%
+% The model follows the micro-macro transition proposed by Zhan et al.
+% using the isochoric right stretch tensor U_bar. In the principal basis,
+%
+%   U_bar = sum_a lambda_bar_a * M_a.
+%
+% For Gaussian-chain statistics, the directional chain stretch is averaged
+% analytically over the unit sphere, giving the closed-form energy
+%
+%   W = mu*((tr(U_bar))^2 + 2*tr(U_bar^2) - 15).
+%
+% The constant -15 makes W(F = I) = 0 because U_bar = I in the reference
+% configuration.
 %
 % Reference:
 %   Zhan, L., Wang, S., Qu, S., Steinmann, P., & Xiao, R. (2023).

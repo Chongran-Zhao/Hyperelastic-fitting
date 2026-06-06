@@ -1,7 +1,29 @@
 function model = Mooney_Rivlin(parameters)
 % Incompressible Mooney-Rivlin model.
-% I1_bar and I2_bar are computed from the isochoric stretches lambda_bar.
-% W = C1*(I1_bar - 3) + C2*(I2_bar - 3).
+%
+% The model is written in terms of the isochoric invariants
+%
+%   I1_bar = tr(C_bar),
+%   I2_bar = 1/2*(I1_bar^2 - tr(C_bar^2)),
+%
+% which are evaluated from the isochoric principal stretches lambda_bar.
+% The strain energy density is
+%
+%   W = C1*(I1_bar - 3) + C2*(I2_bar - 3),
+%
+% so W(F = I) = 0.
+%
+% References:
+%   Mooney, M. (1940).
+%   A theory of large elastic deformation.
+%   Journal of Applied Physics, 11(9), 582-592.
+%
+%   Rivlin, R. S. (1948).
+%   Large elastic deformations of isotropic materials IV. Further
+%   developments of the general theory.
+%   Philosophical Transactions of the Royal Society of London. Series A,
+%   Mathematical and Physical Sciences, 241(835), 379-397.
+%
 % parameters = [C1, C2]
 parameters = parameters(:).';
 

@@ -1,7 +1,22 @@
 function model = Neo_Hookean(parameters)
 % Incompressible Neo-Hookean model.
-% I1_bar = sum(lambda_bar.^2).
-% W = 0.5*mu*(I1_bar - 3).
+%
+% This model is the Gaussian-network limiting form of rubber elasticity,
+% written in terms of the isochoric first invariant
+%
+%   I1_bar = tr(C_bar) = sum(lambda_bar.^2).
+%
+% The strain energy density is
+%
+%   W = 0.5*mu*(I1_bar - 3),
+%
+% so W(F = I) = 0.
+%
+% Reference:
+%   Treloar, L. R. G. (1943).
+%   The elasticity of a network of long-chain molecules-II.
+%   Transactions of the Faraday Society, 39, 241-246.
+%
 % parameters = [mu]
 parameters = parameters(:).';
 

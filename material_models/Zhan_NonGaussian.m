@@ -1,6 +1,27 @@
 function model = Zhan_NonGaussian(parameters)
 % Zhan non-Gaussian chain-network model.
-% Directional chain stretch is integrated over the unit sphere.
+%
+% The model follows the micro-macro transition proposed by Zhan et al.
+% using the principal stretches of the isochoric right stretch tensor U_bar.
+% For each unit direction n, the chain stretch is
+%
+%   lambda_n = U_bar:(n*n').
+%
+% In the principal basis this becomes the spherical expression used in
+% chain_stretch:
+%
+%   lambda_n = lambda_bar_1*cos(theta)^2
+%            + lambda_bar_2*sin(theta)^2*cos(phi)^2
+%            + lambda_bar_3*sin(theta)^2*sin(phi)^2.
+%
+% The non-Gaussian single-chain energy uses the inverse Langevin
+% approximation in inv_langevin.m:
+%
+%   w = N*(lambda_n*beta/sqrt(N) + log(beta/sinh(beta))),
+%   beta = L^{-1}(lambda_n/sqrt(N)).
+%
+% The spherical average is evaluated by Lebedev quadrature. The reference
+% chain energy at lambda_n = 1 is subtracted so W(F = I) = 0.
 %
 % Reference:
 %   Zhan, L., Wang, S., Qu, S., Steinmann, P., & Xiao, R. (2023).

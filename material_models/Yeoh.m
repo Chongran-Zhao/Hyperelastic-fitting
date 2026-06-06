@@ -1,7 +1,23 @@
 function model = Yeoh(parameters)
 % Yeoh model driven by the first isochoric invariant.
-% I1_bar = sum(lambda_bar.^2).
-% W = C1*(I1_bar - 3) + C2*(I1_bar - 3)^2 + C3*(I1_bar - 3)^3.
+%
+% The model uses only the isochoric first invariant
+%
+%   I1_bar = tr(C_bar) = sum(lambda_bar.^2),
+%
+% and expands the strain energy density as a polynomial in I1_bar - 3:
+%
+%   W = C1*(I1_bar - 3)
+%     + C2*(I1_bar - 3)^2
+%     + C3*(I1_bar - 3)^3.
+%
+% This normalization gives W(F = I) = 0.
+%
+% Reference:
+%   Yeoh, O. H. (1993).
+%   Some forms of the strain energy function for rubber.
+%   Rubber Chemistry and Technology, 66(5), 754-771.
+%
 % parameters = [C1, C2, C3]
 parameters = parameters(:).';
 
