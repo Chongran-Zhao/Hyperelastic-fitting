@@ -36,85 +36,26 @@ models = [];
 % models = add_material_model(models, Ogden([0.1, 1.3]), [0.0, -Inf], [Inf, Inf]);
 % models = add_material_model(models, Arruda_Boyce([0.1, 20.0]), [0.0, 0.0], [Inf, Inf]);
 
-% Guan_Gaussian_GL supports 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and 'DN'.
-% models = add_material_model(models, Guan_Gaussian_GL([0.1, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_GL([0.1], 'Hencky'), 0.0, Inf);
-% models = add_material_model(models, Guan_Gaussian_GL([0.1], 'Biot'), 0.0, Inf);
-% models = add_material_model(models, Guan_Gaussian_GL([0.1, 1.0, 1.0], 'CR'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_GL([0.1, 1.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
-% models = add_material_model(models, Guan_Gaussian_GL([0.1, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
-
-% Guan_Gaussian_Biot supports 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and 'DN'.
-% models = add_material_model(models, Guan_Gaussian_Biot([0.1, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_Biot([0.1], 'Hencky'), 0.0, Inf);
-% models = add_material_model(models, Guan_Gaussian_Biot([0.1], 'Biot'), 0.0, Inf);
-% models = add_material_model(models, Guan_Gaussian_Biot([0.1, 1.0, 1.0], 'CR'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_Biot([0.1, 1.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
-% models = add_material_model(models, Guan_Gaussian_Biot([0.1, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
-
-% Guan_Gaussian_Hencky supports 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and 'DN'.
-% models = add_material_model(models, Guan_Gaussian_Hencky([0.1, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_Hencky([0.1], 'Hencky'), 0.0, Inf);
-% models = add_material_model(models, Guan_Gaussian_Hencky([0.1], 'Biot'), 0.0, Inf);
-% models = add_material_model(models, Guan_Gaussian_Hencky([0.1, 1.0, 1.0], 'CR'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_Hencky([0.1, 1.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
-% models = add_material_model(models, Guan_Gaussian_Hencky([0.1, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
-
-% Guan_Gaussian_SH supports 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and 'DN'.
-% Its parameters are [mu, m_hat, strain parameters...], where m_hat belongs
-% to the chain-scale Seth-Hill strain E_hat.
-% models = add_material_model(models, Guan_Gaussian_SH([0.1, 1.0, 1.0], 'SH'), [0.0, -Inf, -Inf], [Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_SH([0.1, 1.0], 'Hencky'), [0.0, -Inf], [Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_SH([0.1, 1.0], 'Biot'), [0.0, -Inf], [Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_SH([0.1, 1.0, 1.0, 1.0], 'CR'), [0.0, -Inf, 0.0, 0.0], [Inf, Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_SH([0.1, 1.0, 1.0], 'CZ'), [0.0, -Inf, -2.0], [Inf, Inf, 2.0]);
-% models = add_material_model(models, Guan_Gaussian_SH([0.1, 1.0, 1.0, 1.0], 'DN'), [0.0, -Inf, 0.0, 0.0], [Inf, Inf, Inf, Inf]);
-
-% Guan_Gaussian_CR supports 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and 'DN'.
-% Its parameters are [mu, m_hat, n_hat, strain parameters...], where m_hat
-% and n_hat belong to the chain-scale Curnier-Rakotomanana strain E_hat.
-% models = add_material_model(models, Guan_Gaussian_CR([0.1, 1.0, 1.0, 1.0], 'SH'), [0.0, 1.0e-8, 1.0e-8, -Inf], [Inf, Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_CR([0.1, 1.0, 1.0], 'Hencky'), [0.0, 1.0e-8, 1.0e-8], [Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_CR([0.1, 1.0, 1.0], 'Biot'), [0.0, 1.0e-8, 1.0e-8], [Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_CR([0.1, 1.0, 1.0, 1.0, 1.0], 'CR'), [0.0, 1.0e-8, 1.0e-8, 0.0, 0.0], [Inf, Inf, Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_CR([0.1, 1.0, 1.0, 1.0], 'CZ'), [0.0, 1.0e-8, 1.0e-8, -2.0], [Inf, Inf, Inf, 2.0]);
-% models = add_material_model(models, Guan_Gaussian_CR([0.1, 1.0, 1.0, 1.0, 1.0], 'DN'), [0.0, 1.0e-8, 1.0e-8, 0.0, 0.0], [Inf, Inf, Inf, Inf, Inf]);
-
-% Guan_Gaussian_CZ supports 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and 'DN'.
-% Its parameters are [mu, m_hat, strain parameters...], where m_hat belongs
-% to the chain-scale Curnier-Zysset strain E_hat.
-% models = add_material_model(models, Guan_Gaussian_CZ([0.1, 1.0, 1.0], 'SH'), [0.0, -Inf, -Inf], [Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_CZ([0.1, 1.0], 'Hencky'), [0.0, -Inf], [Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_CZ([0.1, 1.0], 'Biot'), [0.0, -Inf], [Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_CZ([0.1, 1.0, 1.0, 1.0], 'CR'), [0.0, -Inf, 0.0, 0.0], [Inf, Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_CZ([0.1, 1.0, 1.0], 'CZ'), [0.0, -Inf, -2.0], [Inf, Inf, 2.0]);
-% models = add_material_model(models, Guan_Gaussian_CZ([0.1, 1.0, 1.0, 1.0], 'DN'), [0.0, -Inf, 0.0, 0.0], [Inf, Inf, Inf, Inf]);
-
-% Guan_Gaussian_SH2_3 supports 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and 'DN'.
-% models = add_material_model(models, Guan_Gaussian_SH2_3([0.1, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_SH2_3([0.1], 'Hencky'), 0.0, Inf);
-% models = add_material_model(models, Guan_Gaussian_SH2_3([0.1], 'Biot'), 0.0, Inf);
-% models = add_material_model(models, Guan_Gaussian_SH2_3([0.1, 1.0, 1.0], 'CR'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
-% models = add_material_model(models, Guan_Gaussian_SH2_3([0.1, 1.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
-% models = add_material_model(models, Guan_Gaussian_SH2_3([0.1, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
-
 % models = add_material_model(models, Zhan_Gaussian([1.0]), 0.0, Inf);
 models = add_material_model(models, Zhan_NonGaussian([1.0, 100.0]), [0.0, 0.0], [Inf, Inf]);
 
-% Zhao_NonGaussian supports independently selectable chain E_hat and
-% macroscopic E_bar families: 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and
-% 'DN'. Default parameters and bounds are set by Zhao_NonGaussian.
-% models = add_material_model(models, Zhao_NonGaussian('Hencky', 'Hencky'));
-% models = add_material_model(models, Zhao_NonGaussian('BI', 'Biot'));
-% models = add_material_model(models, Zhao_NonGaussian('CR', 'DN'));
+% Micro_GenStrain supports 'Gaussian' and 'NonGaussian' chain statistics,
+% independently selectable chain E_hat and macroscopic E_bar families:
+% 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and 'DN'. Default parameters
+% and bounds are set by Micro_GenStrain.
+% models = add_material_model(models, Micro_GenStrain('Gaussian', 'Hencky', 'Hencky'));
+% models = add_material_model(models, Micro_GenStrain('NonGaussian', 'BI', 'Biot'));
+% models = add_material_model(models, Micro_GenStrain('NonGaussian', 'CR', 'DN'));
 
 % Hill_GenStrain supports 'SH', 'Hencky', 'Biot', 'BI', 'CR', 'CZ', and 'DN'.
-% models = add_material_model(models, Hill_GenStrain([0.01, 1.0], 'SH'), [0.0, -Inf], [Inf, Inf]);
-% models = add_material_model(models, Hill_GenStrain([0.01], 'Hencky'), 0.0, Inf);
-% models = add_material_model(models, Hill_GenStrain([0.01], 'Biot'), 0.0, Inf);
-% models = add_material_model(models, Hill_GenStrain([0.01, 1.0, 1.0], 'CR'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
-% models = add_material_model(models, Hill_GenStrain([0.01, 0.0], 'CZ'), [0.0, -2.0], [Inf, 2.0]);
-% models = add_material_model(models, Hill_GenStrain([0.01, 1.0, 1.0], 'DN'), [0.0, 0.0, 0.0], [Inf, Inf, Inf]);
+% Default parameters and bounds are set by Hill_GenStrain.
+% models = add_material_model(models, Hill_GenStrain('SH'));
+% models = add_material_model(models, Hill_GenStrain('Hencky'));
+% models = add_material_model(models, Hill_GenStrain('Biot'));
+% models = add_material_model(models, Hill_GenStrain('BI'));
+% models = add_material_model(models, Hill_GenStrain('CR'));
+% models = add_material_model(models, Hill_GenStrain('CZ'));
+% models = add_material_model(models, Hill_GenStrain('DN'));
 
 [models, fit] = start_fit(models, fitting_cases);
 
