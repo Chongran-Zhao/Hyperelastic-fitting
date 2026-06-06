@@ -1,4 +1,4 @@
-function model = Hill_GenStrain(parameters, strainFamily)
+function model = Hill_GenStrain(parametersOrStrainFamily, strainFamily)
 % Hill generalized strain model.
 %
 % Supported generalized strains:
@@ -14,14 +14,23 @@ function model = Hill_GenStrain(parameters, strainFamily)
 %
 % parameters = [mu, strain parameters...]
 
-if nargin < 2 || isempty(strainFamily)
-    strainFamily = 'SH';
+if nargin < 1
+    parametersOrStrainFamily = [];
+end
+if nargin < 2
+    strainFamily = [];
 end
 
-parameters = parameters(:).';
-if isempty(parameters)
+[parameters, strainFamily, lowerBounds, upperBounds] = ...
+    parse_inputs(nargin, parametersOrStrainFamily, strainFamily);
+
+strainParameterCount = strain_parameter_count(strainFamily);
+expectedParameterCount = 1 + strainParameterCount;
+
+if length(parameters) ~= expectedParameterCount
     error('Hill_GenStrain:InvalidParameters', ...
-        'At least the modulus parameter mu is required.');
+        'The parameters must be [mu, strain parameters...], expected %d entries.', ...
+        expectedParameterCount);
 end
 
 mu = parameters(1);
@@ -34,6 +43,8 @@ end
 
 model.name = sprintf('Hill-%s', strainInfo.family);
 model.parameters = parameters;
+model.lower_bounds = lowerBounds;
+model.upper_bounds = upperBounds;
 model.strain_family = strainInfo.family;
 model.strain_family_label = strainInfo.family_label;
 model.parameter_names = [{'mu'}, strainInfo.parameter_names];
@@ -41,6 +52,82 @@ model.energy = @(F) Energy(parameters, strainFamily, F);
 model.S = @(F) S(parameters, strainFamily, F);
 model.P = @(F) P(parameters, strainFamily, F);
 model.set_parameters = @(parameters) Hill_GenStrain(parameters, strainFamily);
+end
+
+function [parameters, strainFamily, lowerBounds, upperBounds] = ...
+    parse_inputs(inputCount, parametersOrStrainFamily, strainFamily)
+if inputCount < 1 || isempty(parametersOrStrainFamily)
+    error('Hill_GenStrain:InvalidCall', ...
+        ['Use Hill_GenStrain(strainFamily) for default parameters or ', ...
+        'Hill_GenStrain(parameters, strainFamily) for explicit parameters.']);
+end
+
+if is_text(parametersOrStrainFamily)
+    if inputCount ~= 1
+        error('Hill_GenStrain:InvalidCall', ...
+            'Use Hill_GenStrain(strainFamily) for default parameters.');
+    end
+
+    strainFamily = parametersOrStrainFamily;
+    [parameters, lowerBounds, upperBounds] = default_parameters(strainFamily);
+    return;
+end
+
+parameters = parametersOrStrainFamily(:).';
+if inputCount < 2 || isempty(strainFamily)
+    strainFamily = 'SH';
+end
+[~, lowerBounds, upperBounds] = default_parameters(strainFamily);
+end
+
+function out = is_text(value)
+out = ischar(value) || ...
+    ((exist('isstring', 'builtin') || exist('isstring', 'file')) && isstring(value));
+end
+
+function [parameters, lowerBounds, upperBounds] = default_parameters(strainFamily)
+[strainParameters, strainLowerBounds, strainUpperBounds] = ...
+    default_family_parameters(strainFamily);
+
+parameters = [0.01, strainParameters];
+lowerBounds = [0.0, strainLowerBounds];
+upperBounds = [Inf, strainUpperBounds];
+end
+
+function [parameters, lowerBounds, upperBounds] = ...
+    default_family_parameters(family)
+familyId = normalize_family(family);
+
+switch familyId
+    case {'hencky', 'biot'}
+        parameters = [];
+        lowerBounds = [];
+        upperBounds = [];
+
+    case {'sh', 'bi'}
+        parameters = 1.0;
+        lowerBounds = -Inf;
+        upperBounds = Inf;
+
+    case 'cr'
+        parameters = [1.0, 1.0];
+        lowerBounds = [1.0e-8, 1.0e-8];
+        upperBounds = [Inf, Inf];
+
+    case 'cz'
+        parameters = 0.0;
+        lowerBounds = -2.0;
+        upperBounds = 2.0;
+
+    case 'dn'
+        parameters = [1.0, 1.0];
+        lowerBounds = [1.0e-8, 1.0e-8];
+        upperBounds = [Inf, Inf];
+
+    otherwise
+        error('Hill_GenStrain:UnsupportedFamily', ...
+            'Unsupported generalized strain family: %s.', char(family));
+end
 end
 
 function W = Energy(parameters, strainFamily, F)
@@ -68,4 +155,41 @@ end
 
 function out = P(parameters, strainFamily, F)
 out = incompressible_constraint(F * S(parameters, strainFamily, F), F);
+end
+
+function count = strain_parameter_count(family)
+familyId = normalize_family(family);
+
+switch familyId
+    case {'hencky', 'biot'}
+        count = 0;
+    case {'sh', 'bi', 'cz'}
+        count = 1;
+    case {'cr', 'dn'}
+        count = 2;
+    otherwise
+        error('Hill_GenStrain:UnsupportedFamily', ...
+            'Unsupported generalized strain family: %s.', char(family));
+end
+end
+
+function familyId = normalize_family(family)
+familyId = lower(char(family));
+familyId = strrep(familyId, '-', '_');
+familyId = strrep(familyId, ' ', '_');
+
+switch familyId
+    case {'seth_hill', 'sethhill'}
+        familyId = 'sh';
+    case {'he', 'log', 'logarithmic'}
+        familyId = 'hencky';
+    case {'bazant_itskov', 'bazantitskov'}
+        familyId = 'bi';
+    case {'curnier_rakotomanana', 'curnierrakotomanana'}
+        familyId = 'cr';
+    case {'curnier_zysset', 'curnierzysset'}
+        familyId = 'cz';
+    case {'darijani_naghdabadi', 'darijaninaghdabadi'}
+        familyId = 'dn';
+end
 end
