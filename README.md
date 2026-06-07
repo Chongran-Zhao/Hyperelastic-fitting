@@ -17,6 +17,14 @@ shared implementation layout instead of separate per-model script folders.
 Legacy model-specific folders have been removed. New work should be routed
 through `driver.m` and the shared implementation folders.
 
+## Codebase Map
+
+![Understand-Anything map](assets/understand-anything-map.svg)
+
+This overview was generated from the local Understand-Anything knowledge graph
+and shows the main layers of the fitting workflow, material models, numerical
+tools, and experimental data.
+
 ## Requirements
 
 - MATLAB

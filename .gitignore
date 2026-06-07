@@ -26,6 +26,12 @@ output/
 outputs/
 results/
 
+# Understand-Anything generated analysis artifacts
+.understand-anything/
+.understand-anything*/
+.understand-anything-plugin/
+understand-anything-plugin/
+
 # Logs and temporary files
 *.log
 *.tmp
